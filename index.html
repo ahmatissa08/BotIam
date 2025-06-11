@@ -730,6 +730,103 @@
             backdrop-filter: blur(10px);
             border: 1px solid var(--glass-border);
         }
+
+        /* Styles pour le formulaire de rendez-vous */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Styles spécifiques pour le formulaire de contact admin */
+.bg-gray-50 {
+    background-color: #f9fafb;
+    animation: slideIn 0.3s ease-out;
+}
+
+.text-gray-700 {
+    color: #374151;
+}
+
+.border-gray-200 {
+    border-color: #e5e7eb;
+}
+
+.bg-gray-600 {
+    background-color: #4b5563;
+}
+
+.bg-gray-600:hover {
+    background-color: #374151;
+}
+
+/* Animation pour les formulaires */
+.bg-blue-50,
+.bg-gray-50 {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
     </style>
 </head>
 <body class="bg-gray-100 antialiased">
@@ -1044,7 +1141,7 @@
         </div>
     </div>
 
-    <script>
+      <script>
         // Configuration des fonctionnalités par type d'utilisateur
         const userFeatures = {
             prospect: {
@@ -1230,7 +1327,7 @@
             // --- Logique d'interception des actions directes ---
             if (message.toLowerCase().includes('prendre rendez-vous')) {
                 if (isLoggedIn && currentUser) {
-                    handleAppointmentScheduling(); // Appelle directement la fonction pour le formulaire
+                    handleAppointmentScheduling(); // Appelle directement la function pour le formulaire
                     input.value = '';
                     input.style.height = 'auto';
                     return; // Stoppe l'exécution, pas besoin d'appeler le LLM
@@ -1243,7 +1340,7 @@
                 }
             } else if (message.toLowerCase().includes('créer une réclamation') || message.toLowerCase().includes('faire une réclamation')) {
                  if (isLoggedIn && currentUser) {
-                    handleComplaintFiling(); // Appelle directement la fonction pour le formulaire de réclamation
+                    handleComplaintFiling(); // Appelle directement la function pour le formulaire de réclamation
                     input.value = '';
                     input.style.height = 'auto';
                     return; // Stoppe l'exécution
@@ -1489,7 +1586,7 @@
                         gradesData.forEach(grade => {
                             responseContent += `<li class="mb-1">${grade.course} (${grade.semester}) : <strong>${grade.grade}</strong></li>`;
                         });
-                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">Pour plus de détails, consultez l\'espace intranet étudiant. <br> _Ceci simule un appel à `grades_api.php`._</p>';
+                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">Pour plus de détails, consultez l\'espace intranet étudiant. <br> _Ceci simule un appel à \`grades_api.php\`._</p>';
                         break;
 
                     case 'Suivi paiements':
@@ -1503,7 +1600,7 @@
                         paymentsData.forEach(payment => {
                             responseContent += `<li class="mb-1">${payment.description} : <strong>${payment.amount}</strong> (${payment.status === 'Payé' ? 'Payé le ' + payment.date : 'Échéance: ' + payment.dueDate})</li>`;
                         });
-                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">Pour un historique complet, veuillez contacter le service comptabilité. <br> _Ceci simule un appel à `payments_api.php`._</p>';
+                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">Pour un historique complet, veuillez contacter le service comptabilité. <br> _Ceci simule un appel à \`payments_api.php\`._</p>';
                         break;
 
                     case 'Emploi du temps':
@@ -1517,7 +1614,7 @@
                         scheduleData.forEach(item => {
                             responseContent += `<li class="mb-1"><strong>${item.day} ${item.time}</strong> : ${item.subject} (${item.room})</li>`;
                         });
-                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">L\'emploi du temps peut être sujet à modifications. <br> _Ceci simule un appel à `schedule_api.php`._</p>';
+                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">L\'emploi du temps peut être sujet à modifications. <br> _Ceci simule un appel à \`schedule_api.php\`._</p>';
                         break;
 
                     case 'Ressources pédagogiques':
@@ -1531,11 +1628,11 @@
                         resourcesData.forEach(res => {
                             responseContent += `<li class="mb-1"><a href="${res.url}" target="_blank" class="text-blue-500 hover:underline">${res.title} (${res.type}) <i class="fas fa-external-link-alt text-xs ml-1"></i></a></li>`;
                         });
-                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">Ces ressources sont également accessibles via l\'intranet. <br> _Ceci simule un appel à `resources_api.php`._</p>';
+                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">Ces ressources sont également accessibles via l\'intranet. <br> _Ceci simule un appel à \`resources_api.php\`._</p>';
                         break;
 
                     case 'Contact administration':
-                        // Appel à la fonction qui affiche le formulaire de contact admin
+                        // Appel à la function qui affiche le formulaire de contact admin
                         displayContactAdminForm();
                         hideTypingIndicator(); // Masquer l'indicateur car un formulaire est affiché
                         return; // Sortir pour ne pas ajouter un message générique après le formulaire
@@ -2379,7 +2476,7 @@
         }
 
 
-        // Ces fonctions (handleAppointmentScheduling, handleComplaintFiling, etc.) sont des exemples de formulaires dynamiques
+        // Ces functions (handleAppointmentScheduling, handleComplaintFiling, etc.) sont des exemples de formulaires dynamiques
         // que le bot pourrait "suggérer" d'afficher. Leur soumission devra interagir avec votre backend PHP.
 
         /**
@@ -2513,7 +2610,6 @@
 
         /**
          * Gère la soumission du formulaire de réclamation.
-         * Simule l'appel au backend PHP.
          * @param {Event} event - L'événement de soumission.
          */
         async function submitComplaint(event) {
@@ -2533,24 +2629,26 @@
 
             addMessage("Soumission de votre réclamation...", 'bot');
             showTypingIndicator();
-            await new Promise(resolve => setTimeout(resolve, 1500)); // Simuler le délai d'API
+            // Supprimez la simulation de délai d'API si vous voulez une réponse immédiate ou ajustez-la
+            // await new Promise(resolve => setTimeout(resolve, 1500)); 
 
             try {
-                // --- SIMULATION DE RÉPONSE BACKEND ---
-                // En production, ceci serait un appel fetch vers votre API PHP réelle:
-                // const response = await fetch('/chatbot_iam/api/reclamations_api.php', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
-                //     body: JSON.stringify(complaintData)
-                // });
-                // const result = await response.json();
-                const mockResult = { success: true, message: 'Réclamation soumise avec succès.' }; // Simulation de réponse
+                // --- APPEL AU BACKEND PHP RÉEL ---
+                const response = await fetch('/chatbot_iam/api/reclamations_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify(complaintData)
+                });
+                const result = await response.json(); // Traitez la vraie réponse de l'API
 
-                if (mockResult.success) {
-                    showNotification('Réclamation soumise avec succès !', 'success');
-                    addMessage(`📝 Votre réclamation de type "${complaintData.type}" avec la priorité "${complaintData.priority}" a été soumise. Nous vous contacterons bientôt. <br> _Ceci simule un appel à \`reclamations_api.php\`._`, 'bot');
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    addMessage(`📝 Votre réclamation de type "${complaintData.type}" avec la priorité "${complaintData.priority}" a été soumise. Nous vous contacterons bientôt.`, 'bot');
                 } else {
-                    showNotification('Erreur lors de la soumission de la réclamation: ' + mockResult.message, 'error');
+                    showNotification('Erreur lors de la soumission de la réclamation: ' + result.message, 'error');
                 }
             } catch (error) {
                 console.error('Erreur lors de la soumission de la réclamation:', error);
@@ -2614,21 +2712,19 @@
             await new Promise(resolve => setTimeout(resolve, 1500)); // Simuler le délai d'API
 
             try {
-                // --- SIMULATION DE RÉPONSE BACKEND ---
-                // En production, ceci serait un appel fetch vers votre API PHP réelle:
-                // const response = await fetch('/chatbot_iam/api/contact_api.php', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
-                //     body: JSON.stringify(messageData)
-                // });
-                // const result = await response.json();
-                const mockResult = { success: true, message: 'Message envoyé à l\'administration avec succès.' }; // Simulation de réponse
+                // --- APPEL AU BACKEND PHP RÉEL ---
+                const response = await fetch('/chatbot_iam/api/contact_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
+                    body: JSON.stringify(messageData)
+                });
+                const result = await response.json(); // Traitez la vraie réponse de l'API
 
-                if (mockResult.success) {
-                    showNotification('Message envoyé à l\'administration !', 'success');
-                    addMessage(`📧 Votre message avec le sujet "${messageData.subject}" a été envoyé à l'administration. Ils vous répondront dans les plus brefs délais. <br> _Ceci simule un appel à \`contact_api.php\`._`, 'bot');
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    addMessage(`📧 Votre message avec le sujet "${messageData.subject}" a été envoyé à l'administration. Ils vous répondront dans les plus brefs délais.`, 'bot');
                 } else {
-                    showNotification('Erreur lors de l\'envoi du message: ' + mockResult.message, 'error');
+                    showNotification('Erreur lors de l\'envoi du message: ' + result.message, 'error');
                 }
             } catch (error) {
                 console.error('Erreur lors de l\'envoi du message à l\'administration:', error);
