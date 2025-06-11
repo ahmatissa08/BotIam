@@ -3,7 +3,13 @@
 
 header('Content-Type: application/json');
 require_once 'config.php';
-require_once 'auth_helper.php';
+require_once 'auth_middleware.php'; // Inclure le middleware d'authentification centralisé
+
+// Gère les requêtes OPTIONS (pré-vol pour CORS)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 // Vérification de la connexion à la base de données
 if ($conn->connect_error) {
@@ -12,44 +18,24 @@ if ($conn->connect_error) {
     exit();
 }
 
-// Vérification de la méthode de requête
+// Authentifier l'utilisateur via le middleware centralisé.
+// Toutes les requêtes à cette API doivent être authentifiées, qu'elles soient pour un admin, étudiant ou prospect.
+$user = authenticate_request();
+if (!$user) {
+    // Si authenticate_request() retourne null, l'utilisateur n'est pas authentifié.
+    http_response_code(401); // Unauthorized
+    echo json_encode(['success' => false, 'message' => 'Non autorisé. Veuillez vous connecter ou votre token est invalide.']);
+    exit();
+}
+
+// Récupérer la méthode de requête et les données d'entrée
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
 
 // Récupérer l'action de l'URL pour les requêtes GET, ou du corps pour POST/PUT/DELETE
 $action = $_GET['action'] ?? ($input['action'] ?? '');
 
-// Vérification de l'authentification pour toutes les actions sensibles
-$user = verify_admin_access($conn); // Utilisé pour vérifier si c'est un admin ou non
-if (!$user) {
-    // Si ce n'est pas un admin, vérifier l'authentification utilisateur
-    $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-    $token = str_replace('Bearer ', '', $auth_header);
-
-    // En production, décodez le JWT et validez-le.
-    // Pour cette démo, nous utilisons un token simple qui est le hachage du mot de passe.
-    // C'est une SIMULATION et NON SÉCURISÉ pour la production.
-    $stmt = $conn->prepare("SELECT id, name, email, user_type FROM users WHERE password_hash = ?");
-    $stmt->bind_param("s", $token); // Le token est le password_hash simulé
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-    } else {
-        // Token invalide ou absent
-        http_response_code(401); // Unauthorized
-        echo json_encode(['success' => false, 'message' => 'Non autorisé ou token invalide.']);
-        exit();
-    }
-}
-
-// Assurez-vous que l'utilisateur est bien authentifié avant de continuer
-if (!$user) {
-    http_response_code(401); // Unauthorized
-    echo json_encode(['success' => false, 'message' => 'Authentification requise.']);
-    exit();
-}
-
+// L'utilisateur est maintenant authentifié et ses données sont disponibles dans $user['id'], $user['user_type'], etc.
 
 switch ($action) {
     case 'createConversation':
@@ -275,7 +261,6 @@ switch ($action) {
                 }
             } else {
                 http_response_code(500);
-                // Correction ici: suppression de l'espace dans json_encode
                 echo json_encode(['success' => false, 'message' => 'Erreur lors de la mise à jour du titre: ' . $conn->error]);
             }
             $stmt->close();

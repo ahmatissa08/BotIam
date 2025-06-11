@@ -1407,12 +1407,14 @@
                 getContact: () => sendQuickMessage("Où êtes-vous situés ?"),
                 requestInfo: () => showNotification("Fonctionnalité 'Demande d\'information' à implémenter. Un formulaire modal pourrait apparaître ici.", 'info'),
                 preRegister: () => showNotification("Fonctionnalité 'Pré-inscription' à implémenter. Un formulaire modal pourrait apparaître ici.", 'info'),
-                getGrades: () => sendQuickMessage("Afficher mes notes"),
-                getPayments: () => sendQuickMessage("État de mes paiements"),
-                getReclamations: () => sendQuickMessage("Mes réclamations"),
-                getSchedule: () => sendQuickMessage("Mon emploi du temps"),
-                getResources: () => sendQuickMessage("Ressources pédagogiques"),
-                contactAdmin: () => sendQuickMessage("Contacter l'administration"),
+
+                // Actions Étudiant
+                getGrades: () => handleStudentFeature('Mes notes'),
+                getPayments: () => handleStudentFeature('Suivi paiements'),
+                getReclamations: () => handleComplaintFiling(), // Appelle la fonction de soumission de réclamation
+                getSchedule: () => handleStudentFeature('Emploi du temps'),
+                getResources: () => handleStudentFeature('Ressources pédagogiques'),
+                contactAdmin: () => handleStudentFeature('Contact administration'),
 
                 // Actions Administrateur
                 openManageUsersModal: () => {
@@ -1452,6 +1454,107 @@
         }
 
         /**
+         * Fonction générique pour les fonctionnalités étudiantes qui nécessitent une implémentation backend.
+         * @param {string} featureName - Le nom de la fonctionnalité.
+         */
+        async function handleStudentFeature(featureName) {
+            if (!isLoggedIn || currentUser.type !== 'student') {
+                showNotification("Accès refusé. Cette fonctionnalité est réservée aux étudiants connectés.", 'error');
+                return;
+            }
+
+            addMessage(`Recherche de vos "${featureName}"...`, 'bot');
+            showTypingIndicator();
+            await new Promise(resolve => setTimeout(resolve, 1500)); // Simuler le délai d'API
+
+            try {
+                let responseContent = '';
+                // --- SIMULATION DE RÉPONSE BACKEND ---
+                // En production, chaque 'case' ferait un appel `fetch` à une API PHP spécifique.
+                // Par exemple:
+                // const response = await fetch(`/chatbot_iam/api/${api_name}.php?action=get${featureName.replace(/\s/g, '')}&userId=${currentUser.id}`, { headers: { 'Authorization': `Bearer ${currentUser.token}` } });
+                // const result = await response.json();
+
+                switch (featureName) {
+                    case 'Mes notes':
+                        // Simulation de données de notes
+                        const gradesData = [
+                            { course: "Mathématiques", grade: "16/20", semester: "S1" },
+                            { course: "Programmation", grade: "14/20", semester: "S1" },
+                            { course: "Base de Données", grade: "17/20", semester: "S1" },
+                            { course: "Réseaux", grade: "13/20", semester: "S2" },
+                            { course: "Projet Fin d'Études", grade: "N/A", semester: "S2" }
+                        ];
+                        responseContent = '<h4 class="font-semibold text-lg mb-2 text-blue-700">Vos dernières notes :</h4><ul class="list-disc pl-5">';
+                        gradesData.forEach(grade => {
+                            responseContent += `<li class="mb-1">${grade.course} (${grade.semester}) : <strong>${grade.grade}</strong></li>`;
+                        });
+                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">Pour plus de détails, consultez l\'espace intranet étudiant. <br> _Ceci simule un appel à `grades_api.php`._</p>';
+                        break;
+
+                    case 'Suivi paiements':
+                        // Simulation de données de paiements
+                        const paymentsData = [
+                            { description: "Frais de scolarité S1", amount: "2500€", status: "Payé", date: "2024-09-15" },
+                            { description: "Frais de scolarité S2", amount: "2500€", status: "À payer", dueDate: "2025-02-01" },
+                            { description: "Cotisation BDE", amount: "50€", status: "Payé", date: "2024-10-01" }
+                        ];
+                        responseContent = '<h4 class="font-semibold text-lg mb-2 text-green-700">Votre suivi des paiements :</h4><ul class="list-disc pl-5">';
+                        paymentsData.forEach(payment => {
+                            responseContent += `<li class="mb-1">${payment.description} : <strong>${payment.amount}</strong> (${payment.status === 'Payé' ? 'Payé le ' + payment.date : 'Échéance: ' + payment.dueDate})</li>`;
+                        });
+                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">Pour un historique complet, veuillez contacter le service comptabilité. <br> _Ceci simule un appel à `payments_api.php`._</p>';
+                        break;
+
+                    case 'Emploi du temps':
+                        // Simulation de données d'emploi du temps
+                        const scheduleData = [
+                            { day: "Lundi", time: "09:00-12:00", subject: "Programmation Avancée", room: "Salle A101" },
+                            { day: "Mardi", time: "14:00-17:00", subject: "Base de Données II", room: "Amphi B" },
+                            { day: "Mercredi", time: "09:00-12:00", subject: "Réseaux et Sécurité", room: "Labo Info 3" }
+                        ];
+                        responseContent = '<h4 class="font-semibold text-lg mb-2 text-purple-700">Votre emploi du temps de la semaine :</h4><ul class="list-disc pl-5">';
+                        scheduleData.forEach(item => {
+                            responseContent += `<li class="mb-1"><strong>${item.day} ${item.time}</strong> : ${item.subject} (${item.room})</li>`;
+                        });
+                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">L\'emploi du temps peut être sujet à modifications. <br> _Ceci simule un appel à `schedule_api.php`._</p>';
+                        break;
+
+                    case 'Ressources pédagogiques':
+                        // Simulation de données de ressources
+                        const resourcesData = [
+                            { title: "Cours Programmation Python", url: "#", type: "PDF" },
+                            { title: "Exercices SQL", url: "#", type: "Document" },
+                            { title: "Vidéos Algorithmique", url: "#", type: "Lien externe" }
+                        ];
+                        responseContent = '<h4 class="font-semibold text-lg mb-2 text-red-700">Ressources pédagogiques disponibles :</h4><ul class="list-disc pl-5">';
+                        resourcesData.forEach(res => {
+                            responseContent += `<li class="mb-1"><a href="${res.url}" target="_blank" class="text-blue-500 hover:underline">${res.title} (${res.type}) <i class="fas fa-external-link-alt text-xs ml-1"></i></a></li>`;
+                        });
+                        responseContent += '</ul><p class="mt-3 text-sm text-gray-600">Ces ressources sont également accessibles via l\'intranet. <br> _Ceci simule un appel à `resources_api.php`._</p>';
+                        break;
+
+                    case 'Contact administration':
+                        // Appel à la fonction qui affiche le formulaire de contact admin
+                        displayContactAdminForm();
+                        hideTypingIndicator(); // Masquer l'indicateur car un formulaire est affiché
+                        return; // Sortir pour ne pas ajouter un message générique après le formulaire
+
+                    default:
+                        responseContent = `Je comprends que vous souhaitez accéder à vos "${featureName}". Cette fonctionnalité sera bientôt disponible !`;
+                        break;
+                }
+                addMessage(responseContent, 'bot');
+            } catch (error) {
+                console.error(`Erreur lors de la récupération des "${featureName}" :`, error);
+                showNotification(`Erreur lors de la récupération des "${featureName}".`, 'error');
+            } finally {
+                hideTypingIndicator();
+            }
+        }
+
+
+        /**
          * Affiche l'indicateur de saisie du bot.
          */
         function showTypingIndicator() {
@@ -1481,6 +1584,17 @@
          */
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
+        }
+
+        /**
+         * Affiche une modal générique avec un titre et du contenu HTML.
+         * @param {string} title - Le titre de la modal.
+         * @param {string} contentHtml - Le contenu HTML à afficher dans la modal.
+         */
+        function showDetailsModal(title, contentHtml) {
+            document.getElementById('detailsModalTitle').textContent = title;
+            document.getElementById('detailsModalContent').innerHTML = contentHtml;
+            openModal('detailsModal');
         }
 
         /**
@@ -2219,14 +2333,17 @@
         }
 
         /**
-         * Affiche les détails d'une réclamation dans une modal (simple alert pour la démo).
-         * En production, cela ouvrirait une modal plus détaillée.
-         * @param {number} id
-         * @param {string} description
-         * @param {string} resolution_details
+         * Affiche les détails d'une réclamation dans une modal.
+         * @param {number} id - L'ID de la réclamation.
+         * @param {string} description - La description de la réclamation.
+         * @param {string} resolution_details - Les détails de résolution.
          */
         function viewReclamationDetails(id, description, resolution_details) {
-            alert(`Détails de la réclamation #${id}:\n\nDescription: ${description}\n\nDétails de résolution: ${resolution_details || 'N/A'}`);
+            const content = `
+                <p class="mb-2"><strong>Description:</strong> ${description}</p>
+                <p><strong>Détails de résolution:</strong> ${resolution_details || 'N/A'}</p>
+            `;
+            showDetailsModal(`Détails de la réclamation #${id}`, content);
         }
 
 
@@ -2395,54 +2512,132 @@
         }
 
         /**
-         * Gère la soumission du formulaire de réclamation (simulation).
-         * Vous devrez implémenter l'appel au backend PHP ici.
+         * Gère la soumission du formulaire de réclamation.
+         * Simule l'appel au backend PHP.
          * @param {Event} event - L'événement de soumission.
          */
         async function submitComplaint(event) {
             event.preventDefault();
+            if (!isLoggedIn || !currentUser) {
+                showNotification("Vous devez être connecté pour soumettre une réclamation.", 'warning');
+                return;
+            }
+
             const complaintData = {
+                userId: currentUser.id, // L'ID de l'utilisateur connecté
                 type: document.getElementById('complaintType').value,
                 priority: document.getElementById('complaintPriority').value,
                 description: document.getElementById('complaintDescription').value,
-                user: currentUser ? currentUser.name : 'Utilisateur non connecté',
-                timestamp: new Date().toISOString()
+                action: 'fileComplaint' // Action pour l'API
             };
 
-            // Ici, vous enverriez `complaintData` à votre backend PHP via une requête fetch
-            // Exemple :
-            /*
-            if (isLoggedIn && currentUser) {
-                fetch('/chatbot_iam/api/reclamations.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${currentUser.token}`
-                    },
-                    body: JSON.stringify({ action: 'fileComplaint', userId: currentUser.id, ...complaintData })
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        showNotification('Réclamation soumise avec succès !', 'success');
-                        addMessage(`📝 Votre réclamation de type "${complaintData.type}" avec la priorité "${complaintData.priority}" a été soumise. Nous vous contacterons bientôt.`, 'bot');
-                    } else {
-                        showNotification('Erreur lors de la soumission de la réclamation: ' + result.message, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur lors de la soumission de la réclamation:', error);
-                    showNotification("Erreur de communication avec le serveur pour la réclamation.", 'error');
-                });
-            } else {
-                showNotification("Vous devez être connecté pour soumettre une réclamation.", 'warning');
-            }
-            */
+            addMessage("Soumission de votre réclamation...", 'bot');
+            showTypingIndicator();
+            await new Promise(resolve => setTimeout(resolve, 1500)); // Simuler le délai d'API
 
-            // Simulation client-side pour le moment si le backend n'est pas prêt pour cette fonctionnalité
-            showNotification('Réclamation soumise avec succès (simulation) !', 'success');
-            addMessage(`📝 Votre réclamation de type "${complaintData.type}" avec la priorité "${complaintData.priority}" a été soumise. Nous vous contacterons bientôt.`, 'bot');
+            try {
+                // --- SIMULATION DE RÉPONSE BACKEND ---
+                // En production, ceci serait un appel fetch vers votre API PHP réelle:
+                // const response = await fetch('/chatbot_iam/api/reclamations_api.php', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
+                //     body: JSON.stringify(complaintData)
+                // });
+                // const result = await response.json();
+                const mockResult = { success: true, message: 'Réclamation soumise avec succès.' }; // Simulation de réponse
+
+                if (mockResult.success) {
+                    showNotification('Réclamation soumise avec succès !', 'success');
+                    addMessage(`📝 Votre réclamation de type "${complaintData.type}" avec la priorité "${complaintData.priority}" a été soumise. Nous vous contacterons bientôt. <br> _Ceci simule un appel à \`reclamations_api.php\`._`, 'bot');
+                } else {
+                    showNotification('Erreur lors de la soumission de la réclamation: ' + mockResult.message, 'error');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la soumission de la réclamation:', error);
+                showNotification("Erreur de communication avec le serveur pour la réclamation.", 'error');
+            } finally {
+                hideTypingIndicator();
+            }
         }
+
+
+        /**
+         * Simule l'affichage d'un formulaire pour contacter l'administration.
+         */
+        function displayContactAdminForm() {
+            if (!isLoggedIn || !currentUser) {
+                showNotification("Veuillez vous connecter pour contacter l'administration.", 'warning');
+                openModal('loginModal');
+                return;
+            }
+
+            const contactForm = `
+                <div class="bg-gray-50 p-4 rounded-lg mt-4 shadow-sm border border-gray-200">
+                    <h4 class="text-lg font-semibold text-gray-700 mb-3">📧 Contacter l'administration</h4>
+                    <form onsubmit="event.preventDefault(); submitContactAdminMessage(event);">
+                        <div class="form-group">
+                            <label for="contactSubject">Sujet:</label>
+                            <input type="text" id="contactSubject" class="w-full p-2 border rounded-md" required placeholder="Ex: Question sur mon dossier">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage">Votre message:</label>
+                            <textarea id="contactMessage" rows="5" class="w-full p-2 border rounded-md resize-y" placeholder="Décrivez votre demande en détail..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full mt-4 bg-gray-600 hover:bg-gray-700">Envoyer le message</button>
+                    </form>
+                </div>
+            `;
+            addMessage(`Pour contacter l'administration, veuillez remplir ce formulaire :${contactForm}`, 'bot');
+        }
+
+        /**
+         * Gère la soumission du formulaire de contact administration.
+         * Simule l'envoi du message au backend PHP.
+         * @param {Event} event - L'événement de soumission.
+         */
+        async function submitContactAdminMessage(event) {
+            event.preventDefault();
+            if (!isLoggedIn || !currentUser) {
+                showNotification("Vous devez être connecté pour envoyer un message à l'administration.", 'warning');
+                return;
+            }
+
+            const messageData = {
+                userId: currentUser.id,
+                subject: document.getElementById('contactSubject').value,
+                message: document.getElementById('contactMessage').value,
+                action: 'sendMessageToAdmin' // Action pour l'API
+            };
+
+            addMessage("Envoi de votre message à l'administration...", 'bot');
+            showTypingIndicator();
+            await new Promise(resolve => setTimeout(resolve, 1500)); // Simuler le délai d'API
+
+            try {
+                // --- SIMULATION DE RÉPONSE BACKEND ---
+                // En production, ceci serait un appel fetch vers votre API PHP réelle:
+                // const response = await fetch('/chatbot_iam/api/contact_api.php', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
+                //     body: JSON.stringify(messageData)
+                // });
+                // const result = await response.json();
+                const mockResult = { success: true, message: 'Message envoyé à l\'administration avec succès.' }; // Simulation de réponse
+
+                if (mockResult.success) {
+                    showNotification('Message envoyé à l\'administration !', 'success');
+                    addMessage(`📧 Votre message avec le sujet "${messageData.subject}" a été envoyé à l'administration. Ils vous répondront dans les plus brefs délais. <br> _Ceci simule un appel à \`contact_api.php\`._`, 'bot');
+                } else {
+                    showNotification('Erreur lors de l\'envoi du message: ' + mockResult.message, 'error');
+                }
+            } catch (error) {
+                console.error('Erreur lors de l\'envoi du message à l\'administration:', error);
+                showNotification("Erreur de communication avec le serveur pour l'envoi du message.", 'error');
+            } finally {
+                hideTypingIndicator();
+            }
+        }
+
 
         /**
          * Bascule la visibilité de la barre latérale d'historique et la remplit.
