@@ -1,0 +1,2350 @@
+<!DOCTYPE html>
+<html lang="fr">
+Fermer$0
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot IAM - Assistant Intelligent</title>
+    <!-- Tailwind CSS CDN pour un stylisme moderne et réactif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+   <style>
+     /* Importation de la police Inter pour une typographie moderne */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        /* Styles de base pour le corps et la typographie */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Couleur de fond légère */
+            margin: 0;
+            display: flex;
+            flex-direction: column; /* Utilisation de colonne pour en-tête et conteneur principal */
+            justify-content: flex-start; /* Aligne l'en-tête en haut */
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden; /* Empêche le défilement horizontal */
+            position: relative; /* Pour positionner les particules */
+        }
+
+        /* Arrière-plan animé avec particules flottantes */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Envoie à l'arrière-plan */
+            pointer-events: none; /* Permet l'interaction avec les éléments en dessous */
+            background: linear-gradient(135deg, #e0f7fa 0%, #cceeff 100%); /* Dégradé de bleu clair */
+        }
+
+        .floating-particles::before {
+            content: '';
+            position: absolute;
+            width: 200vw; /* Plus grand que la fenêtre pour un mouvement hors écran */
+            height: 200vh;
+            background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 90%, rgba(255, 255, 255, 0.15) 0%, transparent 60%),
+                        radial-gradient(circle at 40% 60%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.12) 0%, transparent 55%);
+            animation: moveParticles 60s linear infinite; /* Animation continue */
+            opacity: 0.7;
+            will-change: transform; /* Optimisation des performances */
+        }
+
+        @keyframes moveParticles {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-50%, -50%); } /* Déplacement pour simuler le mouvement des particules */
+        }
+
+        /* Conteneur principal de l l'application */
+        .main-container {
+            display: flex;
+            width: 95%; /* Légèrement plus étroit pour laisser de l'espace sur les bords */
+            max-width: 1400px;
+            height: calc(100vh - 100px); /* Hauteur ajustée pour laisser de la place à l'en-tête */
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* Coins arrondis pour un aspect moderne */
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15); /* Ombre plus prononcée pour la profondeur */
+            overflow: hidden;
+            margin-top: 1rem; /* Marge pour se séparer de l'en-tête */
+            margin-bottom: 1rem;
+        }
+
+        /* En-tête principal */
+        .header {
+            @apply flex justify-between items-center bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-4 shadow-xl w-full; /* Ombre plus forte */
+            border-bottom-left-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            padding: 1rem 2rem; /* Plus de padding */
+            box-sizing: border-box; /* Inclut padding dans la largeur */
+        }
+
+        .header .logo {
+            @apply text-3xl font-extrabold flex items-center gap-3; /* Texte plus grand, plus gras */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .header .logo i {
+            @apply text-4xl; /* Icône plus grande */
+        }
+
+        .user-menu {
+            @apply flex items-center gap-5; /* Espacement ajusté */
+        }
+
+        .user-type-selector {
+            @apply bg-white text-blue-800 px-4 py-2 rounded-full shadow-lg cursor-pointer font-semibold appearance-none pr-10; /* Plus de padding, ombre plus forte */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%232563eb' d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 6.757 7.586 5.343 9z'/%3E%3Csvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.9rem center;
+            background-size: 1.2rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .user-type-selector:hover {
+            @apply bg-gray-50;
+        }
+        .user-type-selector:focus {
+            @apply outline-none ring-2 ring-blue-500 ring-opacity-75;
+        }
+
+        .btn {
+            @apply px-6 py-2.5 rounded-full font-bold transition-all duration-300 ease-in-out shadow-lg; /* Plus de padding, plus gras, ombre plus forte */
+            letter-spacing: 0.05em; /* Léger espacement des lettres */
+        }
+
+        .btn-primary {
+            @apply bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75 transform hover:scale-105; /* Effet de zoom au survol */
+        }
+
+        .btn-secondary {
+            @apply bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transform hover:scale-105; /* Effet de zoom au survol */
+        }
+
+        /* Sidebar (Barre latérale des fonctionnalités) */
+        .sidebar {
+            @apply w-1/4 bg-gray-50 p-6 border-r border-gray-200 flex flex-col flex-shrink-0; /* Empêche de rétrécir */
+            min-width: 280px; /* Largeur minimale un peu plus grande */
+            max-width: 350px;
+            box-shadow: inset -2px 0 5px rgba(0,0,0,0.05); /* Ombre interne */
+            border-top-left-radius: 1.5rem; /* Arrondir le coin supérieur gauche */
+            border-bottom-left-radius: 1.5rem; /* Arrondir le coin inférieur gauche */
+        }
+
+        .sidebar h3 {
+            @apply text-2xl font-bold mb-6 text-blue-800 flex items-center gap-3; /* Plus grand et gras */
+        }
+
+        .sidebar .feature-list {
+            @apply list-none p-0 flex-grow overflow-y-auto;
+            /* Personnalisation de la scrollbar pour la sidebar */
+            scrollbar-width: thin;
+            scrollbar-color: #a0aec0 #edf2f7; /* gray-400 gray-100 */
+        }
+
+        .sidebar .feature-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .sidebar .feature-list::-webkit-scrollbar-track {
+            background: #edf2f7; /* gray-100 */
+            border-radius: 10px;
+        }
+        .sidebar .feature-list::-webkit-scrollbar-thumb {
+            background-color: #a0aec0; /* gray-400 */
+            border-radius: 10px;
+            border: 2px solid #edf2f7; /* gray-100 */
+        }
+
+
+        .sidebar .feature-list li {
+            @apply flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-blue-100 text-gray-700 font-medium transition-all duration-200 mb-3 transform hover:-translate-y-0.5; /* Effet de soulèvement et de transition */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08); /* Ombre plus douce */
+            background-color: #ffffff; /* Fond blanc pour les éléments de liste */
+        }
+
+        .sidebar .feature-list li i {
+            @apply text-blue-600 text-xl; /* Icône plus grande et couleur plus vive */
+        }
+
+        /* Conteneur de Chat */
+        .chat-container {
+            @apply flex-grow flex flex-col bg-white;
+            border-top-right-radius: 1.5rem; /* Arrondir le coin supérieur droit */
+            border-bottom-right-radius: 1.5rem; /* Arrondir le coin inférieur droit */
+        }
+
+        .chat-header {
+            @apply flex justify-between items-center p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white shadow-sm;
+            border-top-right-radius: 1.5rem;
+            padding: 1.5rem; /* Plus de padding */
+        }
+
+        .chat-header h2 {
+            @apply text-2xl font-bold text-gray-800;
+        }
+
+        .chat-header small {
+            @apply text-sm text-gray-500;
+        }
+
+        .chat-status {
+            @apply flex items-center gap-2 text-green-600 font-semibold;
+        }
+
+        .status-dot {
+            @apply w-3 h-3 bg-green-500 rounded-full animate-pulse;
+        }
+
+        .chat-messages {
+            @apply flex-grow p-6 overflow-y-auto bg-gray-100;
+            /* Personnalisation de la scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: #9ca3af #e5e7eb;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: #9ca3af;
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+        }
+
+
+        .message {
+            @apply flex items-start mb-6;
+        }
+
+        .message.user {
+            @apply justify-end;
+        }
+
+        .message-avatar {
+            @apply flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white text-lg shadow-md; /* Ombre sur les avatars */
+        }
+
+        .bot-avatar {
+            @apply bg-blue-500 mr-3;
+        }
+
+        .user-avatar {
+            @apply bg-indigo-500 ml-3;
+        }
+
+        .message-content {
+            @apply p-4 rounded-xl shadow-md max-w-lg; /* Ombre plus douce */
+            word-wrap: break-word;
+            line-height: 1.6; /* Meilleure lisibilité */
+        }
+
+        .bot-message {
+            @apply bg-blue-100 text-gray-800 rounded-bl-none border border-blue-200; /* Ajout de bordure */
+        }
+
+        .user-message {
+            @apply bg-indigo-100 text-gray-800 rounded-br-none border border-indigo-200; /* Ajout de bordure */
+        }
+
+        .quick-actions {
+            @apply flex flex-wrap gap-2 mt-3;
+        }
+
+        .quick-action {
+            @apply px-4 py-2 bg-blue-200 text-blue-800 rounded-full text-sm cursor-pointer hover:bg-blue-300 transition-colors duration-200 shadow-sm transform hover:scale-105; /* Effet de zoom au survol */
+        }
+
+        /* Indicateur de saisie */
+        .typing-indicator {
+            @apply flex items-center justify-center py-3 text-gray-500 text-sm italic;
+            display: none;
+        }
+
+        .typing-dots span {
+            @apply inline-block w-2 h-2 bg-gray-400 rounded-full mx-1;
+            animation: bounce 0.6s infinite alternate;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-5px); }
+        }
+
+        /* Zone de saisie */
+        .chat-input-container {
+            @apply p-4 border-t border-gray-200 bg-white;
+        }
+
+        .chat-input-wrapper {
+            @apply flex items-end bg-gray-50 rounded-full border border-gray-300 p-2 shadow-inner; /* Ombre interne */
+        }
+
+        .chat-input {
+            @apply flex-grow resize-none bg-transparent outline-none px-3 py-2 text-gray-800 text-base;
+            max-height: 120px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #d1d5db #f9fafb;
+        }
+
+        .chat-input::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-input::-webkit-scrollbar-track {
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+        .chat-input::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 10px;
+            border: 2px solid #f9fafb;
+        }
+
+        .send-btn {
+            @apply bg-blue-600 text-white p-3 rounded-full ml-2 hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 transform hover:scale-110; /* Effet de zoom plus prononcé */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Ombre sur le bouton d'envoi */
+        }
+
+        /* Modals */
+        .modal {
+            @apply fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50;
+            display: none;
+        }
+
+        .modal-content {
+            @apply bg-white p-8 rounded-xl shadow-2xl w-full max-w-md relative;
+            animation: fadeInScale 0.3s ease-out forwards;
+            border: 1px solid #e2e8f0; /* Ajout d'une fine bordure */
+        }
+
+        .modal-header {
+            @apply flex justify-between items-center mb-6 pb-4 border-b-2 border-gray-200; /* Bordure plus épaisse */
+        }
+
+        .modal-header h3 {
+            @apply text-2xl font-semibold text-gray-800;
+        }
+
+        .close-modal {
+            @apply text-gray-500 hover:text-gray-700 text-3xl font-bold transition-colors duration-200 cursor-pointer;
+            line-height: 1;
+        }
+
+        .form-group {
+            @apply mb-4;
+        }
+
+        .form-group label {
+            @apply block text-gray-700 text-sm font-medium mb-1;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200; /* Focus ring plus visible */
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Notifications */
+        .notification {
+            @apply fixed top-6 right-6 z-50 transition-all duration-300 ease-out;
+            animation: slideInRight 0.5s ease-out forwards;
+        }
+
+        .notification-content {
+            @apply bg-white p-4 rounded-xl shadow-xl flex items-center gap-3;
+            max-width: 350px;
+            min-width: 250px;
+            border-left: 5px solid;
+        }
+
+        .notification-info .notification-content { border-color: #3b82f6; /* blue-500 */ }
+        .notification-success .notification-content { border-color: #22c55e; /* green-500 */ }
+        .notification-warning .notification-content { border-color: #f59e0b; /* amber-500 */ }
+        .notification-error .notification-content { border-color: #ef4444; /* red-500 */ }
+
+        .notification-content span {
+            @apply text-gray-800 font-medium text-sm flex-grow;
+        }
+
+        .notification-close-btn {
+            @apply bg-transparent border-none text-gray-500 text-xl cursor-pointer hover:text-gray-700;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+
+        /* Styles pour la nouvelle barre latérale d'historique */
+        .history-sidebar {
+            @apply fixed top-0 right-0 h-full w-full md:w-1/3 lg:w-1/4 bg-gray-800 text-white shadow-lg z-40;
+            transform: translateX(100%); /* Initialement cachée */
+            transition: transform 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .history-sidebar.open {
+            transform: translateX(0); /* Affichée */
+        }
+
+        .history-sidebar-header {
+            @apply flex justify-between items-center pb-4 mb-4 border-b border-gray-600;
+        }
+
+        .history-sidebar-header h3 {
+            @apply text-2xl font-bold flex items-center gap-2;
+        }
+
+        .history-sidebar-content {
+            @apply flex-grow overflow-y-auto;
+            /* Personnalisation de la scrollbar pour l'historique */
+            scrollbar-width: thin;
+            scrollbar-color: #6b7280 #374151; /* gray-500 gray-700 */
+        }
+
+        .history-sidebar-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .history-sidebar-content::-webkit-scrollbar-track {
+            background: #374151; /* gray-700 */
+            border-radius: 10px;
+        }
+        .history-sidebar-content::-webkit-scrollbar-thumb {
+            background-color: #6b7280; /* gray-500 */
+            border-radius: 10px;
+            border: 2px solid #374151; /* gray-700 */
+        }
+
+        .history-item {
+            @apply flex items-center justify-between p-3 rounded-lg bg-gray-700 hover:bg-gray-600 cursor-pointer mb-2 transition-colors duration-200;
+        }
+
+        .history-item.active {
+            @apply bg-blue-600 hover:bg-blue-700;
+        }
+
+        .history-item-details {
+            @apply flex-grow mr-2;
+        }
+
+        .history-item-title {
+            @apply font-semibold text-white truncate;
+            max-width: calc(100% - 40px); /* Laisse de la place pour la date et l'icône */
+        }
+
+        .history-item-date {
+            @apply text-xs text-gray-300;
+        }
+
+        .history-item-actions {
+            @apply flex-shrink-0 flex gap-2;
+        }
+
+        .history-action-btn {
+            @apply p-1 rounded-full hover:bg-gray-500 text-gray-300 transition-colors duration-200;
+        }
+
+        .history-action-btn i {
+            @apply text-sm;
+        }
+
+        /* Styles personnalisés pour l'amélioration visuelle */
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .floating-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .interactive-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .interactive-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Media Queries pour la réactivité */
+        @media (max-width: 1024px) { /* xl */
+            .main-container {
+                flex-direction: column;
+                height: auto;
+                min-height: 95vh;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-width: 100%;
+                border-r: none;
+                border-b: 1px solid #e5e7eb; /* border-gray-200 */
+                padding-bottom: 1.5rem;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+                order: 2; /* Place la sidebar en bas sur les petits écrans */
+                border-top-left-radius: 1.5rem; /* Assure l'arrondi si en bas */
+                border-top-right-radius: 1.5rem;
+            }
+
+            .chat-container {
+                border-top-right-radius: 1.5rem; /* Réajuste l'arrondi pour le haut */
+                border-bottom-left-radius: 0; /* Supprime l'arrondi si au-dessus de la sidebar */
+                order: 1; /* Place le chat en haut */
+            }
+            body {
+                justify-content: flex-start; /* Aligne le contenu en haut */
+            }
+            .main-container {
+                margin-top: 0; /* Pas de marge supérieure si en mode colonne */
+            }
+        }
+
+        @media (max-width: 768px) { /* md */
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding-bottom: 1rem;
+            }
+            .user-menu {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+            .auth-buttons {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .auth-buttons .btn {
+                width: 100%;
+            }
+            .user-type-selector {
+                width: 100%;
+                text-align: center;
+            }
+            .sidebar h3 {
+                justify-content: center;
+            }
+            .sidebar .feature-list li {
+                justify-content: center;
+                text-align: center;
+            }
+            .modal-content {
+                margin: 0 1rem;
+            }
+            .message-content {
+                max-width: 80%; /* Ajuste la largeur des bulles de message */
+            }
+            .history-sidebar {
+                width: 90%; /* Plus large sur mobile */
+            }
+        }
+
+        @media (max-width: 480px) { /* sm */
+            .header .logo {
+                font-size: 1.5rem;
+            }
+            .header .logo i {
+                font-size: 2rem;
+            }
+            .chat-header h2 {
+                font-size: 1.5rem;
+            }
+            .chat-header small {
+                font-size: 0.75rem;
+            }
+            .chat-input-wrapper {
+                padding: 0.5rem;
+            }
+            .chat-input {
+                padding: 0.5rem 0.75rem;
+            }
+            .send-btn {
+                padding: 0.6rem;
+            }
+        }
+
+   </style>
+</head>
+<body class="bg-gray-100 antialiased">
+    <!-- Particules flottantes -->
+    <div class="floating-particles" id="particles"></div>
+
+    <!-- En-tête principal -->
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            Chatbot IAM
+        </div>
+        <div class="user-menu">
+            <!-- Sélecteur de type d'utilisateur -->
+            <select class="user-type-selector" id="userType">
+                <option value="prospect">👤 Prospect</option>
+                <option value="student">🎓 Étudiant</option>
+                <option value="admin">⚙️ Administrateur</option>
+            </select>
+            <!-- Boutons d'authentification -->
+            <div class="auth-buttons">
+                <button class="btn btn-secondary" onclick="openModal('loginModal')">
+                    <i class="fas fa-sign-in-alt"></i> Connexion
+                </button>
+                <button class="btn btn-primary" onclick="openModal('registerModal')">
+                    <i class="fas fa-user-plus"></i> Inscription
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteneur principal de l'application -->
+    <div class="main-container">
+        <!-- Barre latérale de navigation -->
+        <aside class="sidebar">
+            <h3>
+                <i class="fas fa-list-ul"></i>
+                <span id="sidebarTitle">Fonctionnalités Prospects</span>
+            </h3>
+            <ul class="feature-list" id="featureList">
+                <!-- Contenu dynamique généré par JS -->
+            </ul>
+        </aside>
+
+        <!-- Conteneur de chat principal -->
+        <main class="chat-container">
+            <!-- En-tête du chat -->
+            <div class="chat-header">
+                <div>
+                    <h2>Assistant IAM</h2>
+                    <small id="userTypeDisplay">Mode Prospect</small>
+                </div>
+                <div class="chat-status">
+                    <div class="status-dot"></div>
+                    <span>En ligne</span>
+                </div>
+                <!-- Bouton pour ouvrir la barre latérale d'historique -->
+                <button class="btn btn-secondary !px-4 !py-2 !rounded-full" onclick="toggleHistorySidebar()">
+                    <i class="fas fa-history mr-2"></i> Historique
+                </button>
+            </div>
+
+            <!-- Zone des messages de chat -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Message initial du bot -->
+                <div class="message">
+                    <div class="message-avatar bot-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content bot-message">
+                        <p>Bonjour ! Je suis votre assistant IAM. Comment puis-je vous aider aujourd'hui ?</p>
+                        <div class="quick-actions" id="quickActions">
+                            <!-- Actions rapides dynamiques générées par JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicateur de saisie du bot -->
+            <div class="typing-indicator" id="typingIndicator">
+                L'assistant tape
+                <span class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </div>
+
+            <!-- Zone de saisie du message -->
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <textarea
+                        class="chat-input"
+                        id="messageInput"
+                        placeholder="Tapez votre message..."
+                        rows="1"></textarea>
+                    <button class="send-btn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals de connexion et d'inscription -->
+
+    <!-- Modal de connexion -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Connexion</h3>
+                <button class="close-modal" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="fas fa-sign-in-alt"></i> Se connecter
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal d'inscription -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Inscription</h3>
+                <button class="close-modal" onclick="closeModal('registerModal')">&times;</button>
+            </div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Nom complet</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Téléphone</label>
+                    <input type="tel" id="registerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerType">Type d'utilisateur</label>
+                    <select id="registerType" required>
+                        <option value="">Sélectionner...</option>
+                        <option value="prospect">Prospect</option>
+                        <option value="student">Étudiant</option>
+                        <!-- Les administrateurs ne peuvent pas s'inscrire via ce formulaire -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Mot de passe</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="fas fa-user-plus"></i> S'inscrire
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modals et Sections pour les Fonctionnalités Admin -->
+
+    <!-- Modal de gestion des utilisateurs -->
+    <div class="modal" id="manageUsersModal">
+        <div class="modal-content max-w-2xl">
+            <div class="modal-header">
+                <h3><i class="fas fa-users"></i> Gestion des Utilisateurs</h3>
+                <button class="close-modal" onclick="closeModal('manageUsersModal')">&times;</button>
+            </div>
+            <div class="admin-panel-content">
+                <button class="btn btn-primary mb-4" onclick="openModal('addUserModal')">Ajouter un nouvel utilisateur</button>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr class="bg-blue-100 text-blue-800 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">ID</th>
+                                <th class="py-3 px-6 text-left">Nom</th>
+                                <th class="py-3 px-6 text-left">Email</th>
+                                <th class="py-3 px-6 text-left">Type</th>
+                                <th class="py-3 px-6 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody" class="text-gray-700 text-sm font-light">
+                            <!-- Les utilisateurs seront chargés ici via JS -->
+                            <tr><td colspan="5" class="py-4 text-center">Chargement des utilisateurs...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter/éditer un utilisateur -->
+    <div class="modal" id="addUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="addUserModalTitle"><i class="fas fa-user-plus"></i> Ajouter un utilisateur</h3>
+                <button class="close-modal" onclick="closeModal('addUserModal')">&times;</button>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userIdToEdit">
+                <div class="form-group">
+                    <label for="userName">Nom complet</label>
+                    <input type="text" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPhone">Téléphone</label>
+                    <input type="tel" id="userPhone">
+                </div>
+                <div class="form-group">
+                    <label for="userTypeSelect">Type d'utilisateur</label>
+                    <select id="userTypeSelect" required>
+                        <option value="prospect">Prospect</option>
+                        <option value="student">Étudiant</option>
+                        <option value="admin">Administrateur</option>
+                    </select>
+                </div>
+                <div class="form-group" id="userPasswordGroup">
+                    <label for="userPassword">Mot de passe</label>
+                    <input type="password" id="userPassword">
+                </div>
+                <button type="submit" class="btn btn-primary w-full"><i class="fas fa-save"></i> Enregistrer l'utilisateur</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de gestion des réclamations -->
+    <div class="modal" id="manageReclamationsModal">
+        <div class="modal-content max-w-2xl">
+            <div class="modal-header">
+                <h3><i class="fas fa-tasks"></i> Gestion des Réclamations</h3>
+                <button class="close-modal" onclick="closeModal('manageReclamationsModal')">&times;</button>
+            </div>
+            <div class="admin-panel-content">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                            <tr class="bg-yellow-100 text-yellow-800 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">ID</th>
+                                <th class="py-3 px-6 text-left">Utilisateur</th>
+                                <th class="py-3 px-6 text-left">Type</th>
+                                <th class="py-3 px-6 text-left">Priorité</th>
+                                <th class="py-3 px-6 text-left">Statut</th>
+                                <th class="py-3 px-6 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reclamationsTableBody" class="text-gray-700 text-sm font-light">
+                            <!-- Les réclamations seront chargées ici via JS -->
+                            <tr><td colspan="6" class="py-4 text-center">Chargement des réclamations...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal des statistiques du chatbot -->
+    <div class="modal" id="statsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-bar"></i> Statistiques du Chatbot</h3>
+                <button class="close-modal" onclick="closeModal('statsModal')">&times;</button>
+            </div>
+            <div class="admin-panel-content p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-blue-50 p-4 rounded-lg shadow-md border border-blue-200">
+                    <h4 class="text-lg font-semibold text-blue-700 mb-2">Total Utilisateurs</h4>
+                    <p id="totalUsersCount" class="text-3xl font-bold text-blue-600">0</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg shadow-md border border-green-200">
+                    <h4 class="text-lg font-semibold text-green-700 mb-2">Messages envoyés</h4>
+                    <p id="totalMessagesCount" class="text-3xl font-bold text-green-600">0</p>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-lg shadow-md border border-yellow-200">
+                    <h4 class="text-lg font-semibold text-yellow-700 mb-2">Réclamations en attente</h4>
+                    <p id="pendingReclamationsCount" class="text-3xl font-bold text-yellow-600">0</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg shadow-md border border-purple-200">
+                    <h4 class="text-lg font-semibold text-purple-700 mb-2">Administrateurs</h4>
+                    <p id="adminUsersCount" class="text-3xl font-bold text-purple-600">0</p>
+                </div>
+                <!-- Plus de stats peuvent être ajoutées ici -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Nouvelle barre latérale pour l'historique du chat -->
+    <div class="history-sidebar" id="historySidebar">
+        <div class="history-sidebar-header">
+            <h3><i class="fas fa-history"></i> Historique des conversations</h3>
+            <button class="close-modal text-white hover:text-gray-300" onclick="toggleHistorySidebar()">&times;</button>
+        </div>
+        <!-- Bouton Nouvelle conversation -->
+        <button class="btn btn-primary bg-green-600 hover:bg-green-700 w-full mb-4" onclick="createNewConversation()">
+            <i class="fas fa-plus-circle mr-2"></i> Nouvelle conversation
+        </button>
+        <div class="history-sidebar-content" id="conversationsList">
+            <!-- La liste des conversations sera chargée ici -->
+            <p class="text-gray-400 text-center py-4">Connectez-vous pour voir l'historique.</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuration des fonctionnalités par type d'utilisateur
+        const userFeatures = {
+            prospect: {
+                title: 'Fonctionnalités Prospects',
+                display: 'Mode Prospect',
+                features: [
+                    { icon: 'fas fa-book', text: 'Informations formations', action: 'getFormations' },
+                    { icon: 'fas fa-euro-sign', text: 'Prix et modalités', action: 'getPricing' },
+                    { icon: 'fas fa-file-alt', text: 'Processus inscription', action: 'getInscription' },
+                    { icon: 'fas fa-map-marker-alt', text: 'Contact et localisation', action: 'getContact' },
+                    { icon: 'fas fa-envelope', text: 'Demande d\'information', action: 'requestInfo' },
+                    { icon: 'fas fa-user-plus', text: 'Pré-inscription', action: 'preRegister' }
+                ],
+                quickActions: [
+                    'Voir les formations',
+                    'Tarifs 2025',
+                    'Comment s\'inscrire ?',
+                    'Prendre rendez-vous'
+                ]
+            },
+            student: {
+                title: 'Espace Étudiant',
+                display: 'Mode Étudiant',
+                features: [
+                    { icon: 'fas fa-chart-line', text: 'Mes notes', action: 'getGrades' },
+                    { icon: 'fas fa-credit-card', text: 'Suivi paiements', action: 'getPayments' },
+                    { icon: 'fas fa-exclamation-circle', text: 'Réclamations', action: 'getReclamations' },
+                    { icon: 'fas fa-calendar', text: 'Emploi du temps', action: 'getSchedule' },
+                    { icon: 'fas fa-book-open', text: 'Ressources pédagogiques', action: 'getResources' },
+                    { icon: 'fas fa-comments', text: 'Contact administration', action: 'contactAdmin' }
+                ],
+                quickActions: [
+                    'Mes dernières notes',
+                    'État des paiements',
+                    'Créer une réclamation',
+                    'Emploi du temps'
+                ]
+            },
+            admin: {
+                title: 'Panel Administrateur',
+                display: 'Mode Administrateur',
+                features: [
+                    { icon: 'fas fa-users', text: 'Gestion utilisateurs', action: 'openManageUsersModal' },
+                    { icon: 'fas fa-chart-bar', text: 'Statistiques chatbot', action: 'openStatsModal' },
+                    { icon: 'fas fa-tasks', text: 'Gestion réclamations', action: 'openManageReclamationsModal' },
+                    { icon: 'fas fa-cog', text: 'Configuration réponses', action: 'configureBot' },
+                    { icon: 'fas fa-bell', text: 'Notifications système', action: 'getNotifications' },
+                    { icon: 'fas fa-database', text: 'Sauvegarde données', action: 'backupData' }
+                ],
+                quickActions: [
+                    'Gérer les utilisateurs',
+                    'Voir les statistiques',
+                    'Réclamations en attente',
+                    'Configurer le bot'
+                ]
+            }
+        };
+
+        let currentUserType = 'prospect';
+        let isLoggedIn = false;
+        let currentUser = null; // Stockera { id, name, email, type, token }
+        // Historique de chat pour le LLM
+        let chatHistory = [{ role: "model", parts: [{ text: "Bonjour ! Je suis votre assistant IAM. Comment puis-je vous aider aujourd'hui ?" }] }];
+        let currentConversationId = null; // ID de la conversation actuelle
+
+        // Initialisation de l'application
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserInterface();
+            setupEventListeners();
+        });
+
+        /**
+         * Configure tous les écouteurs d'événements pour l'interface.
+         */
+        function setupEventListeners() {
+            // Événement pour le changement de type d'utilisateur
+            document.getElementById('userType').addEventListener('change', function(e) {
+                // Si l'utilisateur change manuellement de type, le déconnecter d'abord
+                if (isLoggedIn && currentUserType !== e.target.value) {
+                    logout(); // Déconnexion automatique si le rôle est changé manuellement
+                    showNotification("Vous avez été déconnecté pour changer de rôle.", 'info');
+                }
+                currentUserType = e.target.value;
+                updateUserInterface();
+                // Efface l'historique du chat lors du changement de rôle pour un nouveau contexte
+                chatHistory = [{ role: "model", parts: [{ text: `Bienvenue en mode ${userFeatures[currentUserType].display}. Comment puis-je vous aider ?` }] }];
+                document.getElementById('chatMessages').innerHTML = ''; // Vide les messages
+                addMessage(userFeatures[currentUserType].quickActions.join(', '), 'bot'); // Affiche des actions rapides de bienvenue
+            });
+
+            // Auto-redimensionnement de la textarea de message
+            const messageInput = document.getElementById('messageInput');
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+
+            // Envoi du message par la touche Entrée (sans Shift)
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Soumission des formulaires de connexion et d'inscription
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            document.getElementById('userForm').addEventListener('submit', handleUserFormSubmit); // Pour ajouter/éditer utilisateur
+
+            // Fermeture des modals en cliquant à l'extérieur
+            window.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        }
+
+        /**
+         * Met à jour l'interface utilisateur en fonction du type d'utilisateur sélectionné.
+         */
+        function updateUserInterface() {
+            const config = userFeatures[currentUserType];
+
+            // Met à jour le titre de la barre latérale et le texte d'affichage du mode
+            document.getElementById('sidebarTitle').innerHTML = `<i class="fas fa-list-ul"></i> ${config.title}`;
+            document.getElementById('userTypeDisplay').textContent = config.display;
+
+            // Génère et met à jour la liste des fonctionnalités
+            const featureList = document.getElementById('featureList');
+            featureList.innerHTML = config.features.map(feature =>
+                `<li onclick="executeAction('${feature.action}')">
+                    <i class="${feature.icon}"></i>
+                    ${feature.text}
+                </li>`
+            ).join('');
+
+            // Génère et met à jour les actions rapides
+            const quickActions = document.getElementById('quickActions');
+            quickActions.innerHTML = config.quickActions.map(action =>
+                `<span class="quick-action" onclick="sendQuickMessage('${action}')">${action}</span>`
+            ).join('');
+
+            // Mettre à jour le sélecteur de type d'utilisateur en fonction du currentUser
+            const userTypeSelector = document.getElementById('userType');
+            if (isLoggedIn && currentUser && currentUser.type) {
+                userTypeSelector.value = currentUser.type;
+                userTypeSelector.disabled = true; // Désactiver le sélecteur si connecté
+            } else {
+                userTypeSelector.value = currentUserType; // Revenir au type sélectionné si déconnecté
+                userTypeSelector.disabled = false;
+            }
+        }
+
+        /**
+         * Envoie un message de l'utilisateur au chatbot et gère la réponse.
+         */
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            let message = input.value.trim();
+
+            if (!message) return;
+
+            // --- Logique d'interception des actions directes ---
+            if (message.toLowerCase().includes('prendre rendez-vous')) {
+                if (isLoggedIn && currentUser) {
+                    handleAppointmentScheduling(); // Appelle directement la fonction pour le formulaire
+                    input.value = '';
+                    input.style.height = 'auto';
+                    return; // Stoppe l'exécution, pas besoin d'appeler le LLM
+                } else {
+                    showNotification("Veuillez vous connecter pour prendre un rendez-vous.", 'warning');
+                    openModal('loginModal');
+                    input.value = '';
+                    input.style.height = 'auto';
+                    return; // Stoppe l'exécution
+                }
+            } else if (message.toLowerCase().includes('créer une réclamation') || message.toLowerCase().includes('faire une réclamation')) {
+                 if (isLoggedIn && currentUser) {
+                    handleComplaintFiling(); // Appelle directement la fonction pour le formulaire de réclamation
+                    input.value = '';
+                    input.style.height = 'auto';
+                    return; // Stoppe l'exécution
+                } else {
+                    showNotification("Veuillez vous connecter pour déposer une réclamation.", 'warning');
+                    openModal('loginModal');
+                    input.value = '';
+                    input.style.height = 'auto';
+                    return; // Stoppe l'exécution
+                }
+            }
+
+
+            addMessage(message, 'user');
+            chatHistory.push({ role: "user", parts: [{ text: message }] });
+
+            showTypingIndicator();
+
+            try {
+                // Si c'est le premier message d'une nouvelle conversation (currentConversationId est null),
+                // nous le créerons sur le backend au moment de l'enregistrement du message.
+                // Le conversationId sera ensuite renvoyé par le backend.
+                let tempConversationId = currentConversationId;
+
+                // ENREGISTREMENT DU MESSAGE UTILISATEUR VIA BACKEND PHP
+                if (isLoggedIn && currentUser) {
+                    const sendMsgResponse = await fetch('/chatbot_iam/api/chat.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${currentUser.token}`
+                        },
+                        body: JSON.stringify({
+                            action: 'sendMessage',
+                            userId: currentUser.id,
+                            message: message,
+                            sender: 'user',
+                            conversationId: tempConversationId // Peut être null
+                        })
+                    });
+                    const sendMsgResult = await sendMsgResponse.json();
+                    if (sendMsgResult.success) {
+                        // Si une nouvelle conversation a été créée, mettez à jour l'ID local
+                        if (!tempConversationId && sendMsgResult.conversationId) {
+                            currentConversationId = sendMsgResult.conversationId;
+                            // Recharger la liste des conversations pour afficher la nouvelle
+                            fetchConversations();
+                        }
+                    } else {
+                        console.error('Erreur lors de l\'enregistrement du message utilisateur:', sendMsgResult.message);
+                        showNotification("Le message de l'utilisateur n'a pas pu être enregistré sur le serveur.", 'warning');
+                    }
+                }
+
+                // Appel à l'API Gemini pour générer la réponse du bot
+                const payload = { contents: chatHistory };
+                const apiKey = "AIzaSyAP2MKpsQAitsbTwQMSQ0G0_HeeeftGTIU"; // <--- CLE API MISE A JOUR ICI !
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                let botResponseText = "Désolé, une erreur est survenue lors de la récupération de ma réponse. Veuillez réessayer plus tard.";
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('API Error:', errorData);
+                } else {
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        botResponseText = result.candidates[0].content.parts[0].text;
+                    }
+                }
+
+                addMessage(botResponseText, 'bot');
+                chatHistory.push({ role: "model", parts: [{ text: botResponseText }] });
+
+                // ENREGISTREMENT DE LA RÉPONSE DU BOT VIA BACKEND PHP
+                if (isLoggedIn && currentUser && currentConversationId) {
+                    try {
+                        await fetch('/chatbot_iam/api/chat.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${currentUser.token}`
+                            },
+                            body: JSON.stringify({
+                                action: 'sendMessage',
+                                userId: currentUser.id,
+                                message: botResponseText,
+                                sender: 'bot',
+                                conversationId: currentConversationId
+                            })
+                        });
+                    } catch (error) {
+                        console.error('Erreur lors de l\'enregistrement du message du bot:', error);
+                        showNotification("La réponse du bot n'a pas pu être enregistrée.", 'warning');
+                    }
+                }
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                showNotification("Il semble y avoir un problème de connexion avec le service d'IA.", 'error');
+            } finally {
+                hideTypingIndicator();
+                input.value = ''; // Efface le message après l'envoi
+                input.style.height = 'auto'; // Réinitialise la hauteur
+            }
+        }
+
+        /**
+         * Envoie un message rapide généré par un clic sur une action rapide.
+         * @param {string} message - Le message à envoyer.
+         */
+        function sendQuickMessage(message) {
+            document.getElementById('messageInput').value = message;
+            sendMessage();
+        }
+
+        /**
+         * Ajoute un message à la zone de chat.
+         * @param {string} content - Le contenu du message.
+         * @param {string} sender - Le type d'expéditeur ('user' ou 'bot').
+         */
+        function addMessage(content, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const avatarClass = sender === 'user' ? 'user-avatar' : 'bot-avatar';
+            const avatarIcon = sender === 'user' ? 'fas fa-user' : 'fas fa-robot';
+            const messageClass = sender === 'user' ? 'user-message' : 'bot-message';
+
+            messageDiv.innerHTML = `
+                <div class="message-avatar ${avatarClass}">
+                    <i class="${avatarIcon}"></i>
+                </div>
+                <div class="message-content ${messageClass}">
+                    <p>${content}</p>
+                </div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Défile vers le bas
+        }
+
+        /**
+         * Exécute une action spécifique déclenchée par un clic sur une fonctionnalité de la sidebar.
+         * @param {string} action - L'identifiant de l'action à exécuter.
+         */
+        function executeAction(action) {
+            // Utilise un objet pour mapper les actions à leurs fonctions correspondantes
+            const actions = {
+                // Actions Prospect et Étudiant (déjà existantes)
+                getFormations: () => sendQuickMessage("Quelles sont les formations disponibles ?"),
+                getPricing: () => sendQuickMessage("Quels sont vos tarifs ?"),
+                getInscription: () => sendQuickMessage("Comment s'inscrire ?"),
+                getContact: () => sendQuickMessage("Où êtes-vous situés ?"),
+                requestInfo: () => showNotification("Fonctionnalité 'Demande d\'information' à implémenter. Un formulaire modal pourrait apparaître ici.", 'info'),
+                preRegister: () => showNotification("Fonctionnalité 'Pré-inscription' à implémenter. Un formulaire modal pourrait apparaître ici.", 'info'),
+                getGrades: () => sendQuickMessage("Afficher mes notes"),
+                getPayments: () => sendQuickMessage("État de mes paiements"),
+                getReclamations: () => sendQuickMessage("Mes réclamations"),
+                getSchedule: () => sendQuickMessage("Mon emploi du temps"),
+                getResources: () => sendQuickMessage("Ressources pédagogiques"),
+                contactAdmin: () => sendQuickMessage("Contacter l'administration"),
+
+                // Actions Administrateur
+                openManageUsersModal: () => {
+                    if (isLoggedIn && currentUser.type === 'admin') {
+                        openModal('manageUsersModal');
+                        fetchUsers(); // Charger les utilisateurs lors de l'ouverture de la modal
+                    } else {
+                        showNotification("Accès refusé. Seuls les administrateurs peuvent gérer les utilisateurs.", 'error');
+                    }
+                },
+                openStatsModal: () => {
+                    if (isLoggedIn && currentUser.type === 'admin') {
+                        openModal('statsModal');
+                        fetchStats(); // Charger les stats lors de l'ouverture de la modal
+                    } else {
+                        showNotification("Accès refusé. Seuls les administrateurs peuvent voir les statistiques.", 'error');
+                    }
+                },
+                openManageReclamationsModal: () => {
+                    if (isLoggedIn && currentUser.type === 'admin') {
+                        openModal('manageReclamationsModal');
+                        fetchReclamations(); // Charger les réclamations lors de l'ouverture de la modal
+                    } else {
+                        showNotification("Accès refusé. Seuls les administrateurs peuvent gérer les réclamations.", 'error');
+                    }
+                },
+                configureBot: () => showNotification("Fonctionnalité 'Configuration du bot' à implémenter. Nécessite une interface d'administration.", 'info'),
+                getNotifications: () => showNotification("Fonctionnalité 'Notifications système' à implémenter.", 'info'),
+                backupData: () => showNotification("Fonctionnalité 'Sauvegarde des données' à implémenter. Nécessite un accès serveur direct.", 'info')
+            };
+
+            if (actions[action]) {
+                actions[action]();
+            } else {
+                showNotification(`Action "${action}" non reconnue ou non implémentée.`, 'warning');
+            }
+        }
+
+        /**
+         * Affiche l'indicateur de saisie du bot.
+         */
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        /**
+         * Masque l'indicateur de saisie du bot.
+         */
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        /**
+         * Ouvre une modal spécifiée.
+         * @param {string} modalId - L'ID de la modal à ouvrir.
+         */
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        /**
+         * Ferme une modal spécifiée.
+         * @param {string} modalId - L'ID de la modal à fermer.
+         */
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        /**
+         * Gère le processus de connexion en appelant le backend PHP.
+         * @param {Event} e - L'événement de soumission du formulaire.
+         */
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('/chatbot_iam/api/auth.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password, action: 'login' })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    isLoggedIn = true;
+                    currentUser = result.user; // Le backend renvoie les infos de l'utilisateur
+                    currentUserType = currentUser.type;
+                    updateAuthInterface();
+                    updateUserInterface();
+                    closeModal('loginModal');
+                    showNotification(`Bienvenue ${currentUser.name} ! Vous êtes maintenant connecté en tant que ${userFeatures[currentUserType].display}.`, 'success');
+
+                    // Créer/charger la conversation par défaut ou la dernière conversation
+                    await createOrLoadInitialConversation();
+
+                    // Mettre à jour la liste des conversations dans la sidebar
+                    fetchConversations();
+
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Erreur de connexion:', error);
+                showNotification("Erreur de communication avec le serveur. Assurez-vous que le backend PHP est en cours d'exécution et accessible.", 'error');
+            }
+        }
+
+        /**
+         * Gère le processus d'inscription en appelant le backend PHP.
+         * @param {Event} e - L'événement de soumission du formulaire.
+         */
+        async function handleRegister(e) {
+            e.preventDefault();
+            const formData = {
+                name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                phone: document.getElementById('registerPhone').value,
+                type: document.getElementById('registerType').value,
+                password: document.getElementById('registerPassword').value,
+                action: 'register'
+            };
+
+            try {
+                const response = await fetch('/chatbot_iam/api/auth.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message + " Veuillez vous connecter maintenant.", 'success');
+                    closeModal('registerModal');
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Erreur d\'inscription:', error);
+                showNotification("Erreur de communication avec le serveur. Assurez-vous que le backend PHP est en cours d'exécution et accessible.", 'error');
+            }
+        }
+
+        /**
+         * Met à jour les boutons d'authentification dans l'en-tête.
+         */
+        function updateAuthInterface() {
+            const authButtons = document.querySelector('.auth-buttons');
+            if (isLoggedIn) {
+                authButtons.innerHTML = `
+                    <div class="text-white flex items-center gap-2 mr-4">
+                        <i class="fas fa-user"></i> ${currentUser.name}
+                    </div>
+                    <button class="btn btn-secondary" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </button>
+                `;
+            } else {
+                authButtons.innerHTML = `
+                    <button class="btn btn-secondary" onclick="openModal('loginModal')">
+                        <i class="fas fa-sign-in-alt"></i> Connexion
+                    </button>
+                    <button class="btn btn-primary" onclick="openModal('registerModal')">
+                        <i class="fas fa-user-plus"></i> Inscription
+                    </button>
+                `;
+            }
+        }
+
+        /**
+         * Gère la déconnexion de l'utilisateur.
+         */
+        function logout() {
+            isLoggedIn = false;
+            currentUser = null;
+            currentUserType = 'prospect'; // Revient au mode prospect après déconnexion
+            currentConversationId = null; // Réinitialise la conversation active
+            updateAuthInterface();
+            updateUserInterface(); // Mise à jour de l'interface pour le mode prospect
+            showNotification("Vous avez été déconnecté. À bientôt !", 'info');
+            document.getElementById('chatMessages').innerHTML = `
+                <div class="message">
+                    <div class="message-avatar bot-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content bot-message">
+                        <p>Bonjour ! Je suis votre assistant IAM. Comment puis-je vous aider aujourd'hui ?</p>
+                        <div class="quick-actions" id="quickActions">
+                            <!-- Actions rapides dynamiques générées par JS -->
+                        </div>
+                    </div>
+                </div>`; // Réinitialise l'affichage du chat
+            chatHistory = [{ role: "model", parts: [{ text: "Bonjour ! Je suis votre assistant IAM. Comment puis-je vous aider aujourd'hui ?" }] }]; // Réinitialise l'historique LLM
+            document.getElementById('conversationsList').innerHTML = '<p class="text-gray-400 text-center py-4">Connectez-vous pour voir l\'historique.</p>'; // Vide la liste des conversations
+            // Ferme la barre latérale d'historique si elle est ouverte lors de la déconnexion
+            document.getElementById('historySidebar').classList.remove('open');
+        }
+
+        /**
+         * Affiche une notification temporaire.
+         * @param {string} message - Le message de la notification.
+         * @param {string} type - Le type de notification ('info', 'success', 'warning', 'error').
+         */
+        function showNotification(message, type = 'info') {
+            const notificationsContainer = document.querySelector('body'); // Ajouter à la fin du body
+            const notificationDiv = document.createElement('div');
+            notificationDiv.className = `notification notification-${type}`;
+            notificationDiv.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="notification-close-btn" onclick="this.closest('.notification').remove()">
+                        &times;
+                    </button>
+                </div>
+            `;
+            notificationsContainer.appendChild(notificationDiv);
+
+            // Supprime la notification après 5 secondes
+            setTimeout(() => {
+                if (notificationDiv.parentElement) {
+                    notificationDiv.remove();
+                }
+            }, 5000);
+        }
+
+        /**
+         * Crée une nouvelle conversation ou charge la dernière conversation existante après connexion.
+         */
+        async function createOrLoadInitialConversation() {
+            if (!isLoggedIn || !currentUser) return;
+
+            try {
+                const response = await fetch(`/chatbot_iam/api/chat.php?action=getConversations&userId=${currentUser.id}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
+                });
+                const result = await response.json();
+
+                if (result.success && result.conversations.length > 0) {
+                    // Charger la dernière conversation
+                    currentConversationId = result.conversations[0].id;
+                    await fetchChatHistory(currentUser.id, currentConversationId);
+                    showNotification("Dernière conversation chargée.", 'info');
+                } else {
+                    // Créer une nouvelle conversation si aucune n'existe
+                    await createNewConversation();
+                    showNotification("Nouvelle conversation démarrée.", 'info');
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement/création de la conversation initiale:', error);
+                showNotification("Erreur lors du chargement de la conversation. Veuillez rafraîchir la page.", 'error');
+            }
+        }
+
+        /**
+         * Crée une nouvelle conversation via l'API et initialise le chat.
+         */
+        async function createNewConversation() {
+            if (!isLoggedIn || !currentUser) {
+                showNotification("Veuillez vous connecter pour créer une nouvelle conversation.", 'warning');
+                openModal('loginModal');
+                return;
+            }
+
+            try {
+                const response = await fetch('/chatbot_iam/api/chat.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ action: 'createConversation', userId: currentUser.id })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    currentConversationId = result.conversationId;
+                    document.getElementById('chatMessages').innerHTML = `
+                        <div class="message">
+                            <div class="message-avatar bot-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content bot-message">
+                                <p>Bonjour ! Je suis votre assistant IAM. Comment puis-je vous aider aujourd'hui ?</p>
+                                <div class="quick-actions" id="quickActions">
+                                    <!-- Actions rapides dynamiques générées par JS -->
+                                </div>
+                            </div>
+                        </div>`;
+                    chatHistory = [{ role: "model", parts: [{ text: "Bonjour ! Je suis votre assistant IAM. Comment puis-je vous aider aujourd'hui ?" }] }];
+                    updateUserInterface(); // Pour rafraîchir les actions rapides
+                    showNotification("Nouvelle conversation démarrée.", 'success');
+                    fetchConversations(); // Mettre à jour la liste des conversations
+                } else {
+                    showNotification('Erreur lors de la création de la conversation: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la création de la nouvelle conversation:', error);
+                showNotification("Erreur de communication avec le serveur pour la nouvelle conversation.", 'error');
+            }
+        }
+
+        /**
+         * Récupère l'historique du chat pour une conversation spécifique depuis le backend PHP.
+         * @param {number} userId - L'ID de l'utilisateur.
+         * @param {number} conversationId - L'ID de la conversation à charger.
+         */
+        async function fetchChatHistory(userId, conversationId) {
+            if (!isLoggedIn || !currentUser) return; // S'assurer que l'utilisateur est connecté
+
+            try {
+                const response = await fetch(`/chatbot_iam/api/chat.php?action=getChatHistory&userId=${userId}&conversationId=${conversationId}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('chatMessages').innerHTML = ''; // Effacer le chat principal
+                    chatHistory = []; // Réinitialiser l'historique LLM
+
+                    result.history.forEach(msg => {
+                        addMessage(msg.message_text, msg.sender);
+                        chatHistory.push({ role: msg.sender === 'user' ? 'user' : 'model', parts: [{ text: msg.message_text }] });
+                    });
+                    currentConversationId = conversationId; // Mettre à jour l'ID de la conversation active
+
+                    // Mettre à jour la classe 'active' dans la liste des conversations
+                    document.querySelectorAll('.history-item').forEach(item => {
+                        if (parseInt(item.dataset.conversationId) === conversationId) {
+                            item.classList.add('active');
+                        } else {
+                            item.classList.remove('active');
+                        }
+                    });
+                } else {
+                    showNotification("Impossible de charger l'historique du chat: " + result.message, 'error');
+                    console.error("Erreur PHP pour l'historique:", result.message);
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement de l\'historique du chat:', error);
+                showNotification("Erreur de connexion lors du chargement de l'historique. Assurez-vous que le backend PHP est en cours d'exécution et accessible.", 'error');
+            }
+        }
+
+        /**
+         * Récupère la liste des conversations de l'utilisateur et les affiche dans la sidebar d'historique.
+         */
+        async function fetchConversations() {
+            const conversationsListContainer = document.getElementById('conversationsList');
+            conversationsListContainer.innerHTML = ''; // Vider avant de remplir
+
+            if (!isLoggedIn || !currentUser) {
+                conversationsListContainer.innerHTML = '<p class="text-gray-400 text-center py-4">Connectez-vous pour voir l\'historique.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/chatbot_iam/api/chat.php?action=getConversations&userId=${currentUser.id}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
+                });
+                const result = await response.json();
+
+                if (result.success && result.conversations.length > 0) {
+                    result.conversations.forEach(conv => {
+                        const conversationItem = document.createElement('div');
+                        conversationItem.className = `history-item ${conv.id === currentConversationId ? 'active' : ''}`;
+                        conversationItem.dataset.conversationId = conv.id; // Stocker l'ID de la conversation
+
+                        const date = new Date(conv.start_time).toLocaleDateString('fr-FR', {
+                            year: 'numeric', month: 'short', day: 'numeric'
+                        });
+                        const time = new Date(conv.start_time).toLocaleTimeString('fr-FR', {
+                            hour: '2-digit', minute: '2-digit'
+                        });
+
+                        conversationItem.innerHTML = `
+                            <div class="history-item-details" onclick="loadConversation(${conv.id})">
+                                <div class="history-item-title">${conv.title || 'Conversation sans titre'}</div>
+                                <div class="history-item-date">${date} ${time}</div>
+                            </div>
+                            <div class="history-item-actions">
+                                <button class="history-action-btn" onclick="renameConversation(${conv.id}, '${conv.title ? conv.title.replace(/'/g, "\\'") : ''}')" title="Renommer">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button class="history-action-btn" onclick="deleteConversation(${conv.id})" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        conversationsListContainer.appendChild(conversationItem);
+                    });
+                } else {
+                    conversationsListContainer.innerHTML = '<p class="text-gray-400 text-center py-4">Aucune conversation trouvée.</p>';
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des conversations:', error);
+                showNotification("Erreur de communication avec le serveur pour les conversations.", 'error');
+            }
+        }
+
+        /**
+         * Charge une conversation spécifique dans le chat principal.
+         * @param {number} conversationId - L'ID de la conversation à charger.
+         */
+        async function loadConversation(conversationId) {
+            if (currentConversationId === conversationId) {
+                // Déjà sur cette conversation, ne rien faire
+                return;
+            }
+            if (!isLoggedIn || !currentUser) {
+                 showNotification("Veuillez vous connecter pour consulter l'historique.", 'warning');
+                 openModal('loginModal');
+                 return;
+            }
+            await fetchChatHistory(currentUser.id, conversationId);
+            showNotification(`Conversation ${conversationId} chargée.`, 'info');
+        }
+
+        /**
+         * Renomme une conversation.
+         * @param {number} conversationId - L'ID de la conversation à renommer.
+         * @param {string} oldTitle - L'ancien titre pour pré-remplir l'input.
+         */
+        async function renameConversation(conversationId, oldTitle) {
+            const newTitle = prompt("Entrez le nouveau titre pour cette conversation:", oldTitle);
+            if (newTitle === null || newTitle.trim() === "") {
+                showNotification("Renommage annulé ou titre vide.", 'info');
+                return;
+            }
+
+            if (!isLoggedIn || !currentUser) {
+                showNotification("Vous devez être connecté pour renommer une conversation.", 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch('/chatbot_iam/api/chat.php', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ action: 'renameConversation', conversationId: conversationId, newTitle: newTitle.trim() })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('Conversation renommée avec succès !', 'success');
+                    fetchConversations(); // Recharger la liste des conversations
+                } else {
+                    showNotification('Erreur lors du renommage de la conversation: ' + result.message, 'error');
+                    console.error("Erreur PHP (renameConversation):", result.message);
+                }
+            } catch (error) {
+                console.error('Erreur lors du renommage de la conversation:', error);
+                showNotification("Erreur de communication avec le serveur pour renommer la conversation.", 'error');
+            }
+        }
+
+        /**
+         * Supprime une conversation.
+         * @param {number} conversationId - L'ID de la conversation à supprimer.
+         */
+        async function deleteConversation(conversationId) {
+            if (!confirm("Êtes-vous sûr de vouloir supprimer cette conversation ? Cette action est irréversible.")) {
+                return;
+            }
+             if (!isLoggedIn || !currentUser) {
+                showNotification("Vous devez être connecté pour supprimer une conversation.", 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch('/chatbot_iam/api/chat.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ action: 'deleteConversation', conversationId: conversationId })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('Conversation supprimée avec succès !', 'success');
+                    // Si la conversation supprimée est la conversation active, démarrer une nouvelle conversation
+                    if (currentConversationId === conversationId) {
+                        currentConversationId = null; // Réinitialiser
+                        await createNewConversation(); // Démarrer une nouvelle conversation
+                    } else {
+                        fetchConversations(); // Sinon, juste rafraîchir la liste
+                    }
+                } else {
+                    showNotification('Erreur lors de la suppression de la conversation: ' + result.message, 'error');
+                    console.error("Erreur PHP (deleteConversation):", result.message);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la suppression de la conversation:', error);
+                showNotification("Erreur de communication avec le serveur pour supprimer la conversation.", 'error');
+            }
+        }
+
+        /* --- Fonctions Administrateur (inchangées) --- */
+
+        /**
+         * Récupère tous les utilisateurs depuis le backend et met à jour la table.
+         */
+        async function fetchUsers() {
+            if (!isLoggedIn || currentUser.type !== 'admin') {
+                showNotification("Accès non autorisé pour la gestion des utilisateurs.", 'error');
+                closeModal('manageUsersModal');
+                return;
+            }
+            try {
+                const response = await fetch('/chatbot_iam/api/users_api.php?action=getUsers', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
+                });
+                const result = await response.json();
+
+                const usersTableBody = document.getElementById('usersTableBody');
+                usersTableBody.innerHTML = ''; // Vider le tableau
+
+                if (result.success && result.users.length > 0) {
+                    result.users.forEach(user => {
+                        const row = `
+                            <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                <td class="py-3 px-6 text-left whitespace-nowrap">${user.id}</td>
+                                <td class="py-3 px-6 text-left">${user.name}</td>
+                                <td class="py-3 px-6 text-left">${user.email}</td>
+                                <td class="py-3 px-6 text-left">${user.phone || 'N/A'}</td>
+                                <td class="py-3 px-6 text-left">${user.user_type}</td>
+                                <td class="py-3 px-6 text-center">
+                                    <div class="flex item-center justify-center">
+                                        <button onclick="editUser(${user.id})" class="w-8 h-8 rounded-full bg-blue-200 hover:bg-blue-300 text-blue-700 mx-1 flex items-center justify-center text-lg transform hover:scale-110 transition duration-200">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="deleteUser(${user.id})" class="w-8 h-8 rounded-full bg-red-200 hover:bg-red-300 text-red-700 mx-1 flex items-center justify-center text-lg transform hover:scale-110 transition duration-200">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        usersTableBody.innerHTML += row;
+                    });
+                } else {
+                    usersTableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center">Aucun utilisateur trouvé.</td></tr>`;
+                    if (!result.success) {
+                        showNotification("Erreur lors du chargement des utilisateurs: " + result.message, 'error');
+                        console.error("Erreur PHP (fetchUsers):", result.message);
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des utilisateurs:', error);
+                showNotification("Erreur de communication avec le serveur pour les utilisateurs.", 'error');
+            }
+        }
+
+        /**
+         * Prépare la modal pour l'édition d'un utilisateur.
+         * @param {number} userId - L'ID de l'utilisateur à éditer.
+         */
+        async function editUser(userId) {
+            if (!isLoggedIn || currentUser.type !== 'admin') {
+                showNotification("Accès non autorisé pour l'édition des utilisateurs.", 'error');
+                return;
+            }
+            try {
+                const response = await fetch(`/chatbot_iam/api/users_api.php?action=getUserById&id=${userId}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
+                });
+                const result = await response.json();
+
+                if (result.success && result.user) {
+                    document.getElementById('addUserModalTitle').textContent = 'Modifier un utilisateur';
+                    document.getElementById('userIdToEdit').value = result.user.id;
+                    document.getElementById('userName').value = result.user.name;
+                    document.getElementById('userEmail').value = result.user.email;
+                    document.getElementById('userPhone').value = result.user.phone || '';
+                    document.getElementById('userTypeSelect').value = result.user.user_type;
+                    document.getElementById('userPasswordGroup').style.display = 'none'; // Cacher le champ mot de passe pour l'édition
+                    document.getElementById('userPassword').removeAttribute('required'); // Rendre le mot de passe non requis
+                    openModal('addUserModal');
+                } else {
+                    showNotification("Utilisateur non trouvé: " + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération de l\'utilisateur pour édition:', error);
+                showNotification("Erreur de communication avec le serveur pour l'édition.", 'error');
+            }
+        }
+
+        /**
+         * Supprime un utilisateur via le backend.
+         * @param {number} userId - L'ID de l'utilisateur à supprimer.
+         */
+        async function deleteUser(userId) {
+            if (!isLoggedIn || currentUser.type !== 'admin') {
+                showNotification("Accès non autorisé pour la suppression des utilisateurs.", 'error');
+                return;
+            }
+            if (!confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) { // Utilisation de confirm pour la démo, remplacer par modal custom en production
+                return;
+            }
+            try {
+                const response = await fetch('/chatbot_iam/api/users_api.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ id: userId, action: 'deleteUser' })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    fetchUsers(); // Recharger la liste des utilisateurs
+                } else {
+                    showNotification("Erreur lors de la suppression de l'utilisateur: " + result.message, 'error');
+                    console.error("Erreur PHP (deleteUser):", result.message);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la suppression de l\'utilisateur:', error);
+                showNotification("Erreur de communication avec le serveur pour la suppression.", 'error');
+            }
+        }
+
+        /**
+         * Gère la soumission du formulaire d'ajout/édition d'utilisateur.
+         */
+        async function handleUserFormSubmit(e) {
+            e.preventDefault();
+            if (!isLoggedIn || currentUser.type !== 'admin') {
+                showNotification("Accès non autorisé pour la gestion des utilisateurs.", 'error');
+                return;
+            }
+
+            const userId = document.getElementById('userIdToEdit').value;
+            const userData = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                phone: document.getElementById('userPhone').value,
+                user_type: document.getElementById('userTypeSelect').value,
+            };
+            const password = document.getElementById('userPassword').value;
+
+            let method = 'POST';
+            let action = 'addUser';
+
+            if (userId) { // Si userId existe, c'est une modification
+                method = 'PUT';
+                action = 'updateUser';
+                userData.id = userId;
+                if (password) { // Ajouter le mot de passe seulement s'il est fourni pour une modification
+                    userData.password = password;
+                }
+            } else { // Sinon, c'est un nouvel ajout
+                if (!password) {
+                    showNotification("Le mot de passe est requis pour un nouvel utilisateur.", 'error');
+                    return;
+                }
+                userData.password = password;
+            }
+
+            try {
+                const response = await fetch('/chatbot_iam/api/users_api.php', {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ ...userData, action: action })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    closeModal('addUserModal');
+                    document.getElementById('userForm').reset(); // Réinitialiser le formulaire
+                    document.getElementById('userIdToEdit').value = ''; // Réinitialiser l'ID
+                    document.getElementById('userPasswordGroup').style.display = 'block'; // Afficher le champ mot de passe
+                    document.getElementById('userPassword').setAttribute('required', 'required'); // Le rendre requis à nouveau
+                    fetchUsers(); // Recharger la liste des utilisateurs
+                } else {
+                    showNotification("Erreur lors de l'opération: " + result.message, 'error');
+                    console.error("Erreur PHP (handleUserFormSubmit):", result.message);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la soumission du formulaire utilisateur:', error);
+                showNotification("Erreur de communication avec le serveur pour la gestion des utilisateurs.", 'error');
+            }
+        }
+
+        /**
+         * Récupère toutes les réclamations depuis le backend et met à jour la table.
+         */
+        async function fetchReclamations() {
+            if (!isLoggedIn || currentUser.type !== 'admin') {
+                showNotification("Accès non autorisé pour la gestion des réclamations.", 'error');
+                closeModal('manageReclamationsModal');
+                return;
+            }
+            try {
+                const response = await fetch('/chatbot_iam/api/reclamations_api.php?action=getReclamations', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
+                });
+                const result = await response.json();
+
+                const reclamationsTableBody = document.getElementById('reclamationsTableBody');
+                reclamationsTableBody.innerHTML = ''; // Vider le tableau
+
+                if (result.success && result.reclamations.length > 0) {
+                    result.reclamations.forEach(rec => {
+                        const row = `
+                            <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                <td class="py-3 px-6 text-left whitespace-nowrap">${rec.id}</td>
+                                <td class="py-3 px-6 text-left">${rec.user_email || 'N/A'}</td>
+                                <td class="py-3 px-6 text-left">${rec.type}</td>
+                                <td class="py-3 px-6 text-left">
+                                    <span class="px-2 py-1 rounded-full text-xs font-semibold ${rec.priority === 'urgent' ? 'bg-red-200 text-red-800' : rec.priority === 'high' ? 'bg-orange-200 text-orange-800' : rec.priority === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-green-200 text-green-800'}">
+                                        ${rec.priority}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-6 text-left">
+                                    <select onchange="updateReclamationStatus(${rec.id}, this.value)" class="p-2 border rounded-md shadow-sm">
+                                        <option value="open" ${rec.status === 'open' ? 'selected' : ''}>Ouvert</option>
+                                        <option value="in_progress" ${rec.status === 'in_progress' ? 'selected' : ''}>En cours</option>
+                                        <option value="resolved" ${rec.status === 'resolved' ? 'selected' : ''}>Résolu</option>
+                                        <option value="closed" ${rec.status === 'closed' ? 'selected' : ''}>Fermé</option>
+                                    </select>
+                                </td>
+                                <td class="py-3 px-6 text-center">
+                                    <button onclick="viewReclamationDetails(${rec.id}, '${rec.description.replace(/'/g, "\\'")}', '${rec.resolution_details ? rec.resolution_details.replace(/'/g, "\\'") : ''}')" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 mx-1 flex items-center justify-center text-lg transform hover:scale-110 transition duration-200">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                        reclamationsTableBody.innerHTML += row;
+                    });
+                } else {
+                    reclamationsTableBody.innerHTML = `<tr><td colspan="6" class="py-4 text-center">Aucune réclamation trouvée.</td></tr>`;
+                    if (!result.success) {
+                        showNotification("Erreur lors du chargement des réclamations: " + result.message, 'error');
+                        console.error("Erreur PHP (fetchReclamations):", result.message);
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des réclamations:', error);
+                showNotification("Erreur de communication avec le serveur pour les réclamations.", 'error');
+            }
+        }
+
+        /**
+         * Met à jour le statut d'une réclamation via le backend.
+         * @param {number} recId - L'ID de la réclamation.
+         * @param {string} newStatus - Le nouveau statut.
+         */
+        async function updateReclamationStatus(recId, newStatus) {
+            if (!isLoggedIn || currentUser.type !== 'admin') {
+                showNotification("Accès non autorisé pour la mise à jour des réclamations.", 'error');
+                return;
+            }
+            try {
+                const response = await fetch('/chatbot_iam/api/reclamations_api.php', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ id: recId, status: newStatus, action: 'updateStatus' })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    fetchReclamations(); // Recharger la liste des réclamations
+                } else {
+                    showNotification("Erreur lors de la mise à jour du statut: " + result.message, 'error');
+                    console.error("Erreur PHP (updateReclamationStatus):", result.message);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour du statut de la réclamation:', error);
+                showNotification("Erreur de communication avec le serveur pour la mise à jour des réclamations.", 'error');
+            }
+        }
+
+        /**
+         * Affiche les détails d'une réclamation dans une modal (simple alert pour la démo).
+         * En production, cela ouvrirait une modal plus détaillée.
+         * @param {number} id
+         * @param {string} description
+         * @param {string} resolution_details
+         */
+        function viewReclamationDetails(id, description, resolution_details) {
+            alert(`Détails de la réclamation #${id}:\n\nDescription: ${description}\n\nDétails de résolution: ${resolution_details || 'N/A'}`);
+        }
+
+
+        /**
+         * Récupère les statistiques depuis le backend et met à jour l'interface.
+         */
+        async function fetchStats() {
+            if (!isLoggedIn || currentUser.type !== 'admin') {
+                showNotification("Accès non autorisé pour les statistiques.", 'error');
+                closeModal('statsModal');
+                return;
+            }
+            try {
+                const response = await fetch('/chatbot_iam/api/stats_api.php?action=getStats', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${currentUser.token}` }
+                });
+                const result = await response.json();
+
+                if (result.success && result.stats) {
+                    document.getElementById('totalUsersCount').textContent = result.stats.totalUsers || '0';
+                    document.getElementById('totalMessagesCount').textContent = result.stats.totalMessages || '0';
+                    document.getElementById('pendingReclamationsCount').textContent = result.stats.pendingReclamations || '0';
+                    document.getElementById('adminUsersCount').textContent = result.stats.adminUsers || '0';
+                } else {
+                    showNotification("Erreur lors du chargement des statistiques: " + result.message, 'error');
+                    console.error("Erreur PHP (fetchStats):", result.message);
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des statistiques:', error);
+                showNotification("Erreur de communication avec le serveur pour les statistiques.", 'error');
+            }
+        }
+
+
+        // Ces fonctions (handleAppointmentScheduling, handleComplaintFiling, etc.) sont des exemples de formulaires dynamiques
+        // que le bot pourrait "suggérer" d'afficher. Leur soumission devra interagir avec votre backend PHP.
+
+        /**
+         * Simule l'affichage d'un formulaire pour prendre un rendez-vous.
+         */
+        function handleAppointmentScheduling() {
+            // S'assurer que l'utilisateur est connecté pour prendre un rendez-vous
+            if (!isLoggedIn || !currentUser) {
+                showNotification("Veuillez vous connecter pour prendre un rendez-vous.", 'warning');
+                openModal('loginModal'); // Suggérer la connexion
+                return;
+            }
+
+            const appointmentForm = `
+                <div class="bg-blue-50 p-4 rounded-lg mt-4 shadow-sm border border-blue-200">
+                    <h4 class="text-lg font-semibold text-blue-700 mb-3">📅 Prendre un rendez-vous</h4>
+                    <form onsubmit="event.preventDefault(); submitAppointment(event);">
+                        <div class="form-group">
+                            <label for="appointmentDate">Date souhaitée:</label>
+                            <input type="date" id="appointmentDate" class="w-full p-2 border rounded-md" min="${new Date().toISOString().split('T')[0]}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentTime">Heure préférée:</label>
+                            <select id="appointmentTime" class="w-full p-2 border rounded-md" required>
+                                <option value="">Sélectionner...</option>
+                                <option value="09:00">09:00</option>
+                                <option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentReason">Motif:</label>
+                            <textarea id="appointmentReason" rows="3" class="w-full p-2 border rounded-md resize-y" placeholder="Décrivez brièvement le motif de votre rendez-vous..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full mt-4">Confirmer le rendez-vous</button>
+                    </form>
+                </div>
+            `;
+            addMessage(`Je vais vous aider à prendre un rendez-vous. Veuillez remplir les informations ci-dessous :${appointmentForm}`, 'bot');
+        }
+
+        /**
+         * Gère la soumission du formulaire de rendez-vous en appelant le backend PHP.
+         * @param {Event} event - L'événement de soumission.
+         */
+        async function submitAppointment(event) {
+            event.preventDefault();
+
+            if (!isLoggedIn || !currentUser) {
+                showNotification("Vous devez être connecté pour prendre un rendez-vous.", 'warning');
+                return;
+            }
+
+            const appointmentData = {
+                userId: currentUser.id, // L'ID de l'utilisateur connecté
+                date: document.getElementById('appointmentDate').value,
+                time: document.getElementById('appointmentTime').value,
+                reason: document.getElementById('appointmentReason').value,
+                action: 'createAppointment' // Action pour l'API
+            };
+
+            try {
+                const response = await fetch('/chatbot_iam/api/appointments_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}` // Envoyer le token d'authentification
+                    },
+                    body: JSON.stringify(appointmentData)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('Rendez-vous confirmé ! Vous recevrez une confirmation par email.', 'success');
+                    addMessage(`✅ Votre rendez-vous a été programmé pour le ${appointmentData.date} à ${appointmentData.time}. Motif: ${appointmentData.reason}.`, 'bot');
+                } else {
+                    showNotification('Erreur lors de la confirmation du rendez-vous: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la soumission du rendez-vous:', error);
+                showNotification("Erreur de communication avec le serveur pour le rendez-vous. Assurez-vous que le backend PHP est en cours d'exécution et accessible.", 'error');
+            }
+        }
+
+        /**
+         * Simule l'affichage d'un formulaire pour déposer une réclamation.
+         */
+        function handleComplaintFiling() {
+            if (!isLoggedIn) {
+                showNotification("Vous devez être connecté pour déposer une réclamation. Veuillez vous connecter d'abord.", 'warning');
+                return;
+            }
+
+            const complaintForm = `
+                <div class="bg-amber-50 p-4 rounded-lg mt-4 shadow-sm border border-amber-200">
+                    <h4 class="text-lg font-semibold text-amber-700 mb-3">📝 Déposer une réclamation</h4>
+                    <form onsubmit="event.preventDefault(); submitComplaint(event);">
+                        <div class="form-group">
+                            <label for="complaintType">Type de réclamation:</label>
+                            <select id="complaintType" class="w-full p-2 border rounded-md" required>
+                                <option value="">Sélectionner...</option>
+                                <option value="academic">Problème académique</option>
+                                <option value="administrative">Problème administratif</option>
+                                <option value="payment">Problème de paiement</option>
+                                <option value="technical">Problème technique</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="complaintPriority">Priorité:</label>
+                            <select id="complaintPriority" class="w-full p-2 border rounded-md" required>
+                                <option value="low">Faible</option>
+                                <option value="medium" selected>Moyenne</option>
+                                <option value="high">Élevée</option>
+                                <option value="urgent">Urgente</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="complaintDescription">Description détaillée:</label>
+                            <textarea id="complaintDescription" rows="4" class="w-full p-2 border rounded-md resize-y" placeholder="Décrivez votre problème en détail..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full mt-4 bg-amber-600 hover:bg-amber-700">Soumettre la réclamation</button>
+                    </form>
+                </div>
+            `;
+            addMessage(`Je vais vous aider à déposer votre réclamation. Veuillez fournir les détails :${complaintForm}`, 'bot');
+        }
+
+        /**
+         * Gère la soumission du formulaire de réclamation (simulation).
+         * Vous devrez implémenter l'appel au backend PHP ici.
+         * @param {Event} event - L'événement de soumission.
+         */
+        async function submitComplaint(event) {
+            event.preventDefault();
+            const complaintData = {
+                type: document.getElementById('complaintType').value,
+                priority: document.getElementById('complaintPriority').value,
+                description: document.getElementById('complaintDescription').value,
+                user: currentUser ? currentUser.name : 'Utilisateur non connecté',
+                timestamp: new Date().toISOString()
+            };
+
+            // Ici, vous enverriez `complaintData` à votre backend PHP via une requête fetch
+            // Exemple :
+            /*
+            if (isLoggedIn && currentUser) {
+                fetch('/chatbot_iam/api/reclamations.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentUser.token}`
+                    },
+                    body: JSON.stringify({ action: 'fileComplaint', userId: currentUser.id, ...complaintData })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        showNotification('Réclamation soumise avec succès !', 'success');
+                        addMessage(`📝 Votre réclamation de type "${complaintData.type}" avec la priorité "${complaintData.priority}" a été soumise. Nous vous contacterons bientôt.`, 'bot');
+                    } else {
+                        showNotification('Erreur lors de la soumission de la réclamation: ' + result.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la soumission de la réclamation:', error);
+                    showNotification("Erreur de communication avec le serveur pour la réclamation.", 'error');
+                });
+            } else {
+                showNotification("Vous devez être connecté pour soumettre une réclamation.", 'warning');
+            }
+            */
+
+            // Simulation client-side pour le moment si le backend n'est pas prêt pour cette fonctionnalité
+            showNotification('Réclamation soumise avec succès (simulation) !', 'success');
+            addMessage(`📝 Votre réclamation de type "${complaintData.type}" avec la priorité "${complaintData.priority}" a été soumise. Nous vous contacterons bientôt.`, 'bot');
+        }
+
+        /**
+         * Bascule la visibilité de la barre latérale d'historique et la remplit.
+         */
+        function toggleHistorySidebar() {
+            const historySidebar = document.getElementById('historySidebar');
+            historySidebar.classList.toggle('open');
+
+            if (historySidebar.classList.contains('open')) {
+                // Remplir l'historique quand la sidebar est ouverte
+                fetchConversations();
+            }
+        }
+
+    </script>
+</body>
+</html>
